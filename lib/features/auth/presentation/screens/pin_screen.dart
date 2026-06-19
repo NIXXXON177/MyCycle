@@ -3,11 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/shared/widgets/app_logo.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/router/app_router.dart';
+import 'package:mycycle/core/security/security_controller.dart';
+import 'package:mycycle/shared/widgets/app_logo.dart';
 
 /// Экран ввода PIN-кода при запуске.
 class PinScreen extends ConsumerStatefulWidget {
@@ -32,21 +31,20 @@ class _PinScreenState extends ConsumerState<PinScreen>
     );
     // Автоматически предлагаем биометрию при запуске, если она включена.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.read(settingsServiceProvider).biometricEnabled) {
+      if (ref.read(securityProvider).biometricEnabled) {
         _tryBiometric();
       }
     });
   }
 
   Future<void> _tryBiometric() async {
-    final settings = ref.read(settingsServiceProvider);
-    if (!settings.biometricEnabled) return;
+    if (!ref.read(securityProvider).biometricEnabled) return;
     final service = ref.read(biometricServiceProvider);
     if (!await service.isAvailable()) return;
     final ok = await service.authenticate();
     if (ok && mounted) {
       HapticFeedback.lightImpact();
-      context.go(AppRoutes.home);
+      ref.read(securityProvider.notifier).unlock();
     }
   }
 
@@ -111,7 +109,7 @@ class _PinScreenState extends ConsumerState<PinScreen>
               ],
               const SizedBox(height: 48),
               _buildNumpad(),
-              if (ref.watch(settingsServiceProvider).biometricEnabled) ...[
+              if (ref.watch(securityProvider).biometricEnabled) ...[
                 const SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: _tryBiometric,
@@ -165,10 +163,10 @@ class _PinScreenState extends ConsumerState<PinScreen>
   }
 
   void _verify() {
-    final settings = ref.read(settingsServiceProvider);
-    if (settings.verifyPin(_pin)) {
+    final security = ref.read(securityProvider.notifier);
+    if (security.verifyPin(_pin)) {
       HapticFeedback.lightImpact();
-      context.go(AppRoutes.home);
+      security.unlock();
     } else {
       HapticFeedback.heavyImpact();
       _shake.forward(from: 0);

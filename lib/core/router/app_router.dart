@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/features/auth/presentation/screens/pin_screen.dart';
 import 'package:mycycle/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:mycycle/features/cycle/presentation/screens/cycle_history_screen.dart';
@@ -37,10 +39,24 @@ abstract final class AppRoutes {
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-GoRouter createRouter({required bool pinRequired}) {
+GoRouter createRouter({
+  required Ref ref,
+  required RouterRefreshNotifier refresh,
+}) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: pinRequired ? AppRoutes.pin : AppRoutes.home,
+    refreshListenable: refresh,
+    initialLocation: AppRoutes.home,
+    redirect: (context, state) {
+      final security = ref.read(securityProvider);
+      final onPin = state.matchedLocation == AppRoutes.pin;
+
+      if (security.lockRequired) {
+        return onPin ? null : AppRoutes.pin;
+      }
+      if (onPin) return AppRoutes.home;
+      return null;
+    },
     errorBuilder: (context, state) => Scaffold(
       appBar: AppBar(title: const Text('Ошибка')),
       body: Center(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/router/app_router.dart';
+import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/shared/widgets/app_card.dart';
 import 'package:mycycle/shared/widgets/update_checker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -31,13 +32,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = ref.watch(settingsServiceProvider);
+    final security = ref.watch(securityProvider);
     final themeMode = ref.watch(themeModeProvider);
     final versionLabel = _packageInfo == null
         ? 'Загрузка...'
         : '${_packageInfo!.version} (${_packageInfo!.buildNumber})';
 
-    return Scaffold(      appBar: AppBar(title: const Text('Настройки')),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Настройки')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -73,7 +75,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ListTile(
                   leading: const Icon(Icons.lock_outline),
                   title: const Text('PIN-код'),
-                  subtitle: Text(settings.pinEnabled ? 'Включён' : 'Выключен'),
+                  subtitle: Text(security.pinEnabled ? 'Включён' : 'Выключен'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showPinDialog(context, ref),
                 ),
@@ -82,12 +84,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   secondary: const Icon(Icons.fingerprint),
                   title: const Text('Вход по биометрии'),
                   subtitle: Text(
-                    settings.pinEnabled
+                    security.pinEnabled
                         ? 'Отпечаток или лицо вместо PIN'
                         : 'Сначала включите PIN-код',
                   ),
-                  value: settings.pinEnabled && settings.biometricEnabled,
-                  onChanged: settings.pinEnabled ? _toggleBiometric : null,
+                  value: security.pinEnabled && security.biometricEnabled,
+                  onChanged: security.pinEnabled ? _toggleBiometric : null,
                 ),
               ],
             ),
@@ -179,33 +181,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _setTheme(WidgetRef ref, ThemeMode mode) async {    await ref.read(settingsServiceProvider).setThemeMode(mode);
+  Future<void> _setTheme(WidgetRef ref, ThemeMode mode) async {
+    await ref.read(settingsServiceProvider).setThemeMode(mode);
     ref.read(themeModeProvider.notifier).state = mode;
   }
 
   Future<void> _toggleBiometric(bool value) async {
-    final settings = ref.read(settingsServiceProvider);
     if (value) {
-      final available = await ref.read(biometricServiceProvider).isAvailable();
-      if (!available) {
+      final biometric = ref.read(biometricServiceProvider);
+      if (!await biometric.isAvailable()) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Биометрия недоступна или не настроена'),
+              content: Text('Биометрия недоступна или не настроена на телефоне'),
             ),
           );
         }
         return;
       }
+      final confirmed = await biometric.authenticate();
+      if (!confirmed) return;
     }
-    await settings.setBiometricEnabled(value);
-    if (mounted) setState(() {});
+    await ref.read(securityProvider.notifier).setBiometricEnabled(value);
   }
 
   Future<void> _showPinDialog(BuildContext context, WidgetRef ref) async {
-    final settings = ref.read(settingsServiceProvider);
+    final security = ref.read(securityProvider);
     final controller = TextEditingController();
-    var enabled = settings.pinEnabled;
+    var enabled = security.pinEnabled;
 
     await showDialog(
       context: context,
@@ -233,10 +236,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ],
           ),
           actions: [
-            if (settings.pinEnabled)
+            if (security.pinEnabled)
               TextButton(
                 onPressed: () async {
-                  await settings.removePin();
+                  await ref.read(securityProvider.notifier).disablePin();
                   if (context.mounted) Navigator.pop(context);
                 },
                 child: const Text('Отключить'),
@@ -248,10 +251,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             FilledButton(
               onPressed: () async {
                 if (enabled) {
-                  if (controller.text.length != 4) return;
-                  await settings.setPin(enabled: true, code: controller.text);
+                  if (controller.text.length != 4) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('PIN должен содержать 4 цифры'),
+                        ),
+                      );
+                    }
+                    return;
+                  }
+                  await ref
+                      .read(securityProvider.notifier)
+                      .enablePin(controller.text);
                 } else {
-                  await settings.removePin();
+                  await ref.read(securityProvider.notifier).disablePin();
                 }
                 if (context.mounted) Navigator.pop(context);
               },

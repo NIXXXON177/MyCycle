@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/database/app_database.dart';
 import 'package:mycycle/core/router/app_router.dart';
+import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/core/services/backup_service.dart';
 import 'package:mycycle/core/services/biometric_service.dart';
 import 'package:mycycle/core/services/demo_data_seeder.dart';
@@ -59,6 +60,18 @@ final updateServiceProvider = Provider<UpdateService>((ref) => UpdateService());
 
 final biometricServiceProvider =
     Provider<BiometricService>((ref) => BiometricService());
+
+final securityProvider =
+    StateNotifierProvider<SecurityController, SecurityState>((ref) {
+  return SecurityController(ref.watch(settingsServiceProvider));
+});
+
+final routerRefreshProvider = Provider<RouterRefreshNotifier>((ref) {
+  final notifier = RouterRefreshNotifier();
+  ref.onDispose(notifier.dispose);
+  ref.listen(securityProvider, (_, __) => notifier.refresh());
+  return notifier;
+});
 
 // --- Data sources ---
 
@@ -162,8 +175,8 @@ final wishesProvider = FutureProvider<List<Wish>>((ref) async {
 });
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final pinRequired = ref.read(settingsServiceProvider).pinEnabled;
-  return createRouter(pinRequired: pinRequired);
+  final refresh = ref.watch(routerRefreshProvider);
+  return createRouter(ref: ref, refresh: refresh);
 });
 
 /// Инвалидирует все провайдеры данных после изменений.

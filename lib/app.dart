@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/theme/app_theme.dart';
+import 'package:mycycle/shared/widgets/app_lock_observer.dart';
 import 'package:mycycle/shared/widgets/update_checker.dart';
 
 /// Корневой виджет приложения MyCycle.
@@ -28,7 +29,9 @@ class MyCycleApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      builder: (context, child) => UpdateChecker(child: child),
+      builder: (context, child) => AppLockObserver(
+        child: UpdateChecker(child: child),
+      ),
     );
   }
 }
