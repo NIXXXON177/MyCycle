@@ -31,7 +31,11 @@ android {
         release {
             def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
             if (keystorePath != null) {
-                storeFile file(keystorePath)
+                def keystoreFile = new File(keystorePath)
+                if (!keystoreFile.isAbsolute()) {
+                    keystoreFile = new File(rootProject.projectDir, keystorePath)
+                }
+                storeFile keystoreFile
                 storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
                 keyAlias System.getenv("ANDROID_KEY_ALIAS")
                 keyPassword System.getenv("ANDROID_KEY_PASSWORD")
