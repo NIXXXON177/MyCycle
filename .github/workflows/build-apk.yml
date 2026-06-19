@@ -37,6 +37,14 @@ jobs:
           VERSION_NAME=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d+ -f1)
           echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
 
+      - name: Check release notes
+        run: |
+          if [ ! -s release_notes/whats_new.txt ]; then
+            echo "Файл release_notes/whats_new.txt пуст."
+            echo "Опишите изменения перед push в main."
+            exit 1
+          fi
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -54,26 +62,29 @@ jobs:
       - name: Prepare release files
         run: |
           cp build/app/outputs/flutter-apk/app-release.apk MyCycle.apk
-          cat > manifest.json << EOF
+          TAG="v${{ steps.version.outputs.name }}.${{ github.run_number }}"
+          jq -n \
+            --argjson versionCode ${{ github.run_number }} \
+            --arg versionName "${{ steps.version.outputs.name }}" \
+            --arg apkUrl "https://github.com/${{ github.repository }}/releases/download/${TAG}/MyCycle.apk" \
+            --rawfile notes release_notes/whats_new.txt \
+            '{versionCode: $versionCode, versionName: $versionName, apkUrl: $apkUrl, notes: $notes}' \
+            > manifest.json
           {
-            "versionCode": ${{ github.run_number }},
-            "versionName": "${{ steps.version.outputs.name }}",
-            "apkUrl": "https://github.com/${{ github.repository }}/releases/download/v${{ steps.version.outputs.name }}.${{ github.run_number }}/MyCycle.apk",
-            "notes": "Сборка #${{ github.run_number }} — ${{ github.event.head_commit.message }}"
-          }
-          EOF
+            echo "Сборка ${{ github.run_number }} · ${TAG}"
+            echo ""
+            cat release_notes/whats_new.txt
+            echo ""
+            echo "---"
+            echo "Установите MyCycle.apk поверх текущей версии — все данные сохранятся."
+          } > release_body.md
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.name }}.${{ github.run_number }}
           name: MyCycle ${{ steps.version.outputs.name }} (build ${{ github.run_number }})
-          body: |
-            Автоматическая сборка из коммита `${{ github.sha }}`.
-
-            **Сообщение коммита:** ${{ github.event.head_commit.message }}
-
-            Установите `MyCycle.apk` поверх текущей версии — данные сохранятся.
+          body_path: release_body.md
           files: |
             MyCycle.apk
             manifest.json

@@ -52,9 +52,36 @@ Future<void> showUpdateDialog(
     barrierDismissible: true,
     builder: (dialogContext) => AlertDialog(
       title: const Text('Доступно обновление'),
-      content: Text(
-        'Версия ${update.versionName} (сборка ${update.versionCode})\n\n'
-        '${update.notes ?? 'Установить обновление? Все данные сохранятся.'}',
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Версия ${update.versionName} · сборка ${update.versionCode}',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Что исправлено:',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              update.notes?.trim().isNotEmpty == true
+                  ? update.notes!.trim()
+                  : 'Улучшения и исправления.',
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Данные сохранятся — это обновление поверх текущей версии.',
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(dialogContext).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
