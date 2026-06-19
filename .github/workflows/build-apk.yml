@@ -1,0 +1,80 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+
+      - name: Decode keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/mycycle-release.jks
+
+      - name: Read version name
+        id: version
+        run: |
+          VERSION_NAME=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d+ -f1)
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        env:
+          ANDROID_KEYSTORE_PATH: android/mycycle-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          flutter build apk --release \
+            --build-name=${{ steps.version.outputs.name }} \
+            --build-number=${{ github.run_number }}
+
+      - name: Prepare release files
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk MyCycle.apk
+          cat > manifest.json << EOF
+          {
+            "versionCode": ${{ github.run_number }},
+            "versionName": "${{ steps.version.outputs.name }}",
+            "apkUrl": "https://github.com/${{ github.repository }}/releases/download/v${{ steps.version.outputs.name }}.${{ github.run_number }}/MyCycle.apk",
+            "notes": "Сборка #${{ github.run_number }} — ${{ github.event.head_commit.message }}"
+          }
+          EOF
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.name }}.${{ github.run_number }}
+          name: MyCycle ${{ steps.version.outputs.name }} (build ${{ github.run_number }})
+          body: |
+            Автоматическая сборка из коммита `${{ github.sha }}`.
+
+            **Сообщение коммита:** ${{ github.event.head_commit.message }}
+
+            Установите `MyCycle.apk` поверх текущей версии — данные сохранятся.
+          files: |
+            MyCycle.apk
+            manifest.json
+          make_latest: true
