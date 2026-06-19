@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
+import 'package:mycycle/shared/widgets/app_logo.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/router/app_router.dart';
 
@@ -26,7 +27,7 @@ class _PinScreenState extends ConsumerState<PinScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('🌸', style: TextStyle(fontSize: 64)),
+              const AppLogo(size: 96),
               const SizedBox(height: 16),
               Text(
                 'MyCycle',

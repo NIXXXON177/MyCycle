@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mycycle/app.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/theme/app_theme.dart';
+import 'package:mycycle/shared/widgets/app_logo.dart';
+import 'package:mycycle/shared/widgets/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Экран загрузки и безопасная инициализация перед показом приложения.
@@ -62,7 +64,7 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('🌸', style: TextStyle(fontSize: 48)),
+                  const AppLogo(size: 72),
                   const SizedBox(height: 16),
                   const Text(
                     'Не удалось запустить приложение',
@@ -98,18 +100,7 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
       return MaterialApp(
         theme: AppTheme.light(),
         home: const Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('🌸', style: TextStyle(fontSize: 64)),
-                SizedBox(height: 24),
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('MyCycle', style: TextStyle(fontSize: 20)),
-              ],
-            ),
-          ),
+          body: SplashScreen(),
         ),
       );
     }
