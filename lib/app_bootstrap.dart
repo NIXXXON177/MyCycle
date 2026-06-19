@@ -6,6 +6,8 @@ import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/theme/app_theme.dart';
 import 'package:mycycle/shared/widgets/app_logo.dart';
 import 'package:mycycle/shared/widgets/splash_screen.dart';
+import 'package:mycycle/core/services/widget/widget_background_handler.dart';
+import 'package:mycycle/core/services/widget/widget_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Экран загрузки и безопасная инициализация перед показом приложения.
@@ -44,6 +46,8 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
             settings: settings.reminderSettings,
             prediction: prediction,
           );
+
+      await ref.read(homeWidgetServiceProvider).sync();
 
       if (mounted) setState(() => _ready = true);
     } catch (e, stack) {
@@ -112,6 +116,8 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
 /// Загружает SharedPreferences и запускает приложение.
 Future<void> bootstrapApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await registerWidgetCallbacks();
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);

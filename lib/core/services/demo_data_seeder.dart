@@ -2,11 +2,13 @@ import 'package:mycycle/core/enums/energy_level.dart';
 import 'package:mycycle/core/enums/mood_level.dart';
 import 'package:mycycle/core/enums/pain_level.dart';
 import 'package:mycycle/core/enums/pain_location.dart';
+import 'package:mycycle/core/enums/pms_symptom.dart';
 import 'package:mycycle/core/enums/support_event_type.dart';
 import 'package:mycycle/core/enums/wish_priority.dart';
 import 'package:mycycle/core/services/settings_service.dart';
 import 'package:mycycle/features/cycle/data/repositories/cycle_repository.dart';
 import 'package:mycycle/features/diary/data/repositories/diary_repository.dart';
+import 'package:mycycle/features/important_dates/data/repositories/important_date_repository.dart';
 import 'package:mycycle/features/support/data/repositories/support_repository.dart';
 import 'package:mycycle/features/support/domain/entities/support_event.dart';
 import 'package:mycycle/features/wellbeing/data/repositories/wellbeing_repository.dart';
@@ -22,6 +24,7 @@ class DemoDataSeeder {
     required this.diaryRepo,
     required this.supportRepo,
     required this.wishRepo,
+    required this.importantDateRepo,
     required this.settings,
   });
 
@@ -30,6 +33,7 @@ class DemoDataSeeder {
   final DiaryRepository diaryRepo;
   final SupportRepository supportRepo;
   final WishRepository wishRepo;
+  final ImportantDateRepository importantDateRepo;
   final SettingsService settings;
 
   final _uuid = const Uuid();
@@ -79,6 +83,9 @@ class DemoDataSeeder {
               : (d % 2 == 0 ? EnergyLevel.high : EnergyLevel.medium),
           pain: d % 7 == 0 ? PainLevel.moderate : PainLevel.none,
           painLocations: d % 7 == 0 ? [PainLocation.abdomen] : [],
+          pmsSymptoms: d % 6 == 0
+              ? [PmsSymptom.irritability, PmsSymptom.bloating]
+              : [],
           note: d % 5 == 0 ? 'Заметка за ${date.day}.${date.month}' : null,
         ),
       );
@@ -107,10 +114,32 @@ class DemoDataSeeder {
         createdAt: now.subtract(const Duration(days: 3)),
       ),
     );
+    await supportRepo.add(
+      SupportEvent(
+        id: _uuid.v4(),
+        type: SupportEventType.needSupport,
+        createdAt: now.subtract(const Duration(days: 8)),
+      ),
+    );
+
+    await importantDateRepo.create(
+      title: 'Годовщина',
+      date: now.add(const Duration(days: 14)),
+      repeatYearly: true,
+    );
+    await importantDateRepo.create(
+      title: 'День рождения',
+      date: DateTime(now.year, (now.month % 12) + 1, 15),
+      repeatYearly: true,
+    );
 
     await wishRepo.create(
       title: 'Массаж спины',
       description: 'После рабочей недели было бы здорово',
+      priority: WishPriority.high,
+    );
+    await wishRepo.create(
+      title: 'Плед и сериал',
       priority: WishPriority.high,
     );
     await wishRepo.create(

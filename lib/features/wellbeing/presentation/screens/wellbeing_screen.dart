@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mycycle/core/enums/energy_level.dart';
+import 'package:mycycle/core/enums/intimacy_type.dart';
 import 'package:mycycle/core/enums/mood_level.dart';
 import 'package:mycycle/core/enums/pain_level.dart';
 import 'package:mycycle/core/enums/pain_location.dart';
+import 'package:mycycle/core/enums/pms_symptom.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/utils/date_utils.dart';
 import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
@@ -25,7 +27,9 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
   MoodLevel _mood = MoodLevel.normal;
   EnergyLevel _energy = EnergyLevel.medium;
   PainLevel _pain = PainLevel.none;
+  IntimacyType _intimacy = IntimacyType.none;
   final Set<PainLocation> _painLocations = {};
+  final Set<PmsSymptom> _pmsSymptoms = {};
   final _noteController = TextEditingController();
   bool _loaded = false;
 
@@ -55,12 +59,18 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
         _painLocations
           ..clear()
           ..addAll(entry.painLocations);
+        _intimacy = entry.intimacy;
+        _pmsSymptoms
+          ..clear()
+          ..addAll(entry.pmsSymptoms);
         _noteController.text = entry.note ?? '';
       } else {
         _mood = MoodLevel.normal;
         _energy = EnergyLevel.medium;
         _pain = PainLevel.none;
+        _intimacy = IntimacyType.none;
         _painLocations.clear();
+        _pmsSymptoms.clear();
         _noteController.clear();
       }
       _loaded = true;
@@ -152,6 +162,36 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
               }).toList(),
             ),
           ],
+          const SectionTitle('Симптомы ПМС'),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: PmsSymptom.values.map((symptom) {
+              final selected = _pmsSymptoms.contains(symptom);
+              return FilterChip(
+                label: Text('${symptom.emoji} ${symptom.label}'),
+                selected: selected,
+                onSelected: (value) {
+                  setState(() {
+                    if (value) {
+                      _pmsSymptoms.add(symptom);
+                    } else {
+                      _pmsSymptoms.remove(symptom);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          const SectionTitle('Близость'),
+          _buildSelector(
+            items: IntimacyType.loggable,
+            selected: _intimacy,
+            label: (i) => i == IntimacyType.none
+                ? i.label
+                : '${i.emoji} ${i.label}',
+            onSelected: (i) => setState(() => _intimacy = i),
+          ),
           const SectionTitle('Заметка'),
           TextField(
             controller: _noteController,
@@ -202,9 +242,11 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
       energy: _energy,
       pain: _pain,
       painLocations: _painLocations.toList(),
+      pmsSymptoms: _pmsSymptoms.toList(),
       note: _noteController.text.trim().isEmpty
           ? null
           : _noteController.text.trim(),
+      intimacy: _intimacy,
     );
 
     await ref.read(wellbeingRepositoryProvider).saveForDate(

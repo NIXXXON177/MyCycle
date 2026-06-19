@@ -1,7 +1,9 @@
 import 'package:mycycle/core/constants/db_tables.dart';
 import 'package:mycycle/core/database/app_database.dart';
+import 'package:mycycle/core/utils/date_utils.dart';
 import 'package:mycycle/features/diary/data/models/diary_model.dart';
 import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
+import 'package:mycycle/features/diary/domain/entities/diary_list_query.dart';
 
 class DiaryLocalDataSource {
   DiaryLocalDataSource(this._db);
@@ -17,15 +19,38 @@ class DiaryLocalDataSource {
     return maps.map(DiaryModel.fromMap).toList();
   }
 
-  Future<List<DiaryEntry>> search(String query) async {
+  Future<List<DiaryEntry>> query(DiaryListQuery query) async {
     final database = await _db.database;
+    final conditions = <String>[];
+    final args = <Object?>[];
+
+    if (query.text.isNotEmpty) {
+      conditions.add('text LIKE ?');
+      args.add('%${query.text}%');
+    }
+    if (query.favoritesOnly) {
+      conditions.add('is_favorite = 1');
+    }
+    if (query.from != null) {
+      conditions.add('date >= ?');
+      args.add(AppDateUtils.dateToIso(query.from!));
+    }
+    if (query.to != null) {
+      conditions.add('date <= ?');
+      args.add(AppDateUtils.dateToIso(query.to!));
+    }
+
     final maps = await database.query(
       DbTables.diary,
-      where: 'text LIKE ?',
-      whereArgs: ['%$query%'],
+      where: conditions.isEmpty ? null : conditions.join(' AND '),
+      whereArgs: args.isEmpty ? null : args,
       orderBy: 'date DESC',
     );
     return maps.map(DiaryModel.fromMap).toList();
+  }
+
+  Future<List<DiaryEntry>> search(String query) async {
+    return this.query(DiaryListQuery(text: query));
   }
 
   Future<DiaryEntry?> getById(String id) async {

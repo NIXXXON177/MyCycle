@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
+import 'package:mycycle/core/enums/intimacy_type.dart';
 import 'package:mycycle/core/enums/pain_level.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/router/app_router.dart';
 import 'package:mycycle/core/utils/date_utils.dart';
+import 'package:mycycle/features/cycle/data/repositories/cycle_repository.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
 import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
@@ -167,10 +169,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       ),
       builder: (sheetContext) => Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -220,6 +223,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Text(
                         '${entry.first.pain.emoji} ${entry.first.pain.label}',
                       ),
+                    if (entry.first.intimacy != IntimacyType.none)
+                      Text(
+                        '${entry.first.intimacy.emoji} ${entry.first.intimacy.label}',
+                      ),
+                    if (entry.first.pmsSymptoms.isNotEmpty)
+                      Text(
+                        entry.first.pmsSymptoms
+                            .map((s) => '${s.emoji} ${s.label}')
+                            .join(', '),
+                      ),
                     if (entry.first.note != null)
                       Text(entry.first.note!),
                   ],
@@ -227,6 +240,45 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             ] else
               const Text('Самочувствие не отмечено'),
+            const SizedBox(height: 12),
+            Text(
+              'Месячные',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            ..._buildPeriodActions(
+              sheetContext: sheetContext,
+              day: day,
+              cycles: cycles,
+              repo: repo,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Близость',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: IntimacyType.loggable.map((type) {
+                final selected = entry.isNotEmpty &&
+                    entry.first.intimacy == type;
+                return FilterChip(
+                  label: Text(
+                    type == IntimacyType.none
+                        ? type.label
+                        : '${type.emoji} ${type.label}',
+                  ),
+                  selected: selected,
+                  onSelected: (_) => _saveIntimacy(
+                    sheetContext,
+                    day,
+                    type,
+                  ),
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -247,8 +299,125 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ),
           ],
         ),
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildPeriodActions({
+    required BuildContext sheetContext,
+    required DateTime day,
+    required List<Cycle> cycles,
+    required CycleRepository repo,
+  }) {
+    final date = AppDateUtils.dateOnly(day);
+    final today = AppDateUtils.dateOnly(DateTime.now());
+
+    if (date.isAfter(today)) {
+      return [
+        Text(
+          'Отметки доступны только за прошедшие дни',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ];
+    }
+
+    if (repo.isPeriodDay(cycles, day)) {
+      return [
+        const Text('Этот день уже отмечен как месячные'),
+      ];
+    }
+
+    final ongoing = _ongoingCycleForEnd(cycles, date);
+    final widgets = <Widget>[];
+
+    if (ongoing != null) {
+      widgets.add(
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _endPeriodOnDay(sheetContext, date, ongoing),
+            icon: const Icon(Icons.stop_circle_outlined),
+            label: const Text('Окончание в этот день'),
+          ),
+        ),
+      );
+    } else {
+      widgets.add(
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _startPeriodOnDay(sheetContext, date),
+            icon: const Icon(Icons.water_drop_outlined),
+            label: const Text('Начало в этот день'),
+          ),
+        ),
+      );
+    }
+
+    return widgets;
+  }
+
+  /// Незавершённый цикл, который можно закрыть в [day].
+  Cycle? _ongoingCycleForEnd(List<Cycle> cycles, DateTime day) {
+    final target = AppDateUtils.dateOnly(day);
+    Cycle? best;
+    for (final c in cycles) {
+      final start = AppDateUtils.dateOnly(c.startDate);
+      if (start.isAfter(target)) continue;
+      if (c.endDate != null) continue;
+      if (best == null || start.isAfter(AppDateUtils.dateOnly(best.startDate))) {
+        best = c;
+      }
+    }
+    return best;
+  }
+
+  Future<void> _startPeriodOnDay(
+    BuildContext sheetContext,
+    DateTime day,
+  ) async {
+    await ref.read(cycleRepositoryProvider).addCycle(startDate: day);
+    await _afterCycleChange();
+    if (!mounted) return;
+    Navigator.pop(sheetContext);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Начало месячных: ${AppDateUtils.formatDate(day)}',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _endPeriodOnDay(
+    BuildContext sheetContext,
+    DateTime day,
+    Cycle cycle,
+  ) async {
+    await ref
+        .read(cycleRepositoryProvider)
+        .updateCycle(cycle.copyWith(endDate: day));
+    await _afterCycleChange();
+    if (!mounted) return;
+    Navigator.pop(sheetContext);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Окончание месячных: ${AppDateUtils.formatDate(day)}',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _afterCycleChange() async {
+    invalidateAllData(ref);
+    final settings = ref.read(settingsServiceProvider);
+    final prediction = await ref.read(cycleRepositoryProvider).getPrediction();
+    await ref.read(notificationServiceProvider).scheduleReminders(
+          settings: settings.reminderSettings,
+          prediction: prediction,
+        );
   }
 
   /// Открывает экран самочувствия для конкретного дня.
@@ -257,6 +426,31 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     context.push(
       '${AppRoutes.wellbeingDay}?date=${date.millisecondsSinceEpoch}',
     );
+  }
+
+  Future<void> _saveIntimacy(
+    BuildContext sheetContext,
+    DateTime day,
+    IntimacyType intimacy,
+  ) async {
+    final date = AppDateUtils.dateOnly(day);
+    await ref
+        .read(wellbeingRepositoryProvider)
+        .setIntimacyForDate(date, intimacy);
+    invalidateAllData(ref);
+    ref.invalidate(wellbeingByDateProvider(date));
+    if (mounted) {
+      Navigator.pop(sheetContext);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            intimacy == IntimacyType.none
+                ? 'Отметка близости снята'
+                : 'Сохранено: ${intimacy.label}',
+          ),
+        ),
+      );
+    }
   }
 
   /// Номер дня цикла для произвольной даты (1 = день начала месячных).

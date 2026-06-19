@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/features/auth/presentation/screens/pin_screen.dart';
 import 'package:mycycle/features/calendar/presentation/screens/calendar_screen.dart';
@@ -8,6 +9,7 @@ import 'package:mycycle/features/cycle/presentation/screens/cycle_history_screen
 import 'package:mycycle/features/cycle/presentation/screens/home_screen.dart';
 import 'package:mycycle/features/diary/presentation/screens/diary_edit_screen.dart';
 import 'package:mycycle/features/diary/presentation/screens/diary_screen.dart';
+import 'package:mycycle/features/diary/presentation/screens/memories_screen.dart';
 import 'package:mycycle/features/partner/presentation/screens/partner_screen.dart';
 import 'package:mycycle/features/patterns/presentation/screens/patterns_screen.dart';
 import 'package:mycycle/features/settings/presentation/screens/reminders_screen.dart';
@@ -27,6 +29,7 @@ abstract final class AppRoutes {
   static const wellbeingDay = '/wellbeing/day';
   static const diary = '/diary';
   static const diaryEdit = '/diary/edit';
+  static const memories = '/diary/memories';
   static const statistics = '/statistics';
   static const patterns = '/patterns';
   static const partner = '/partner';
@@ -135,6 +138,11 @@ GoRouter createRouter({
           final id = state.uri.queryParameters['id'];
           return DiaryEditScreen(entryId: id);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.memories,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const MemoriesScreen(),
       ),
       GoRoute(
         path: AppRoutes.wellbeingDay,

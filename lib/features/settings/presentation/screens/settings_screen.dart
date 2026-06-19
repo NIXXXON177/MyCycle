@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/router/app_router.dart';
-import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/shared/widgets/app_card.dart';
 import 'package:mycycle/shared/widgets/update_checker.dart';
 import 'package:package_info_plus/package_info_plus.dart';

@@ -1,7 +1,7 @@
 name: mycycle
 description: MyCycle — персональное приложение для отслеживания менструального цикла.
 publish_to: 'none'
-version: 1.2.1+1
+version: 1.7.0+1
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -29,6 +29,8 @@ dependencies:
   package_info_plus: ^8.1.2
   http: ^1.2.2
   open_filex: ^4.6.0
+  home_widget: ^0.7.0
+  image_picker: ^1.1.2
   local_auth: ^2.3.0
 
 dev_dependencies:

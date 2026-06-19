@@ -9,6 +9,7 @@ class DiaryEntry {
     required this.mood,
     required this.createdAt,
     required this.updatedAt,
+    this.isFavorite = false,
   });
 
   final String id;
@@ -17,6 +18,7 @@ class DiaryEntry {
   final MoodLevel mood;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isFavorite;
 
   DiaryEntry copyWith({
     String? id,
@@ -25,6 +27,7 @@ class DiaryEntry {
     MoodLevel? mood,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isFavorite,
   }) {
     return DiaryEntry(
       id: id ?? this.id,
@@ -33,6 +36,7 @@ class DiaryEntry {
       mood: mood ?? this.mood,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 }

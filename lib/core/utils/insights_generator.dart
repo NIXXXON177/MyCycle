@@ -1,5 +1,6 @@
 import 'package:mycycle/core/enums/cycle_phase.dart';
 import 'package:mycycle/core/enums/energy_level.dart';
+import 'package:mycycle/core/enums/pms_symptom.dart';
 import 'package:mycycle/core/utils/date_utils.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
@@ -120,6 +121,9 @@ class PatternsAnalyzer {
     final energyInsight = _analyzeEnergyByPhase(cycles, wellbeing, averageCycleLength);
     if (energyInsight != null) insights.add(energyInsight);
 
+    final pmsInsight = _analyzePmsSymptoms(cycles, wellbeing);
+    if (pmsInsight != null) insights.add(pmsInsight);
+
     if (insights.isEmpty) {
       insights.add(
         'Пока недостаточно данных. Продолжай отмечать самочувствие — закономерности появятся!',
@@ -221,6 +225,34 @@ class PatternsAnalyzer {
       return 'Перед месячными низкая энергия отмечается в $percent% случаев';
     }
     return null;
+  }
+
+  String? _analyzePmsSymptoms(
+    List<Cycle> cycles,
+    List<WellbeingEntry> wellbeing,
+  ) {
+    if (cycles.length < 2 || wellbeing.isEmpty) return null;
+
+    final counts = <PmsSymptom, int>{};
+    for (final cycle in cycles) {
+      for (var daysBefore = 1; daysBefore <= 7; daysBefore++) {
+        final date = cycle.startDate.subtract(Duration(days: daysBefore));
+        final entry = wellbeing.where(
+          (w) => AppDateUtils.isSameDay(w.date, date),
+        );
+        if (entry.isEmpty) continue;
+        for (final symptom in entry.first.pmsSymptoms) {
+          counts[symptom] = (counts[symptom] ?? 0) + 1;
+        }
+      }
+    }
+
+    if (counts.isEmpty) return null;
+    final top = counts.entries.reduce((a, b) => a.value > b.value ? a : b);
+    if (top.value < 2) return null;
+
+    return 'Перед месячными чаще всего отмечается: '
+        '${top.key.emoji} ${top.key.label}';
   }
 
   String _dayWord(int days) {

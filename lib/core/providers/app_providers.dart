@@ -15,9 +15,16 @@ import 'package:mycycle/features/cycle/data/datasources/cycle_local_datasource.d
 import 'package:mycycle/features/cycle/data/repositories/cycle_repository.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:mycycle/features/important_dates/data/datasources/important_date_local_datasource.dart';
+import 'package:mycycle/features/important_dates/data/repositories/important_date_repository.dart';
+import 'package:mycycle/features/important_dates/domain/entities/important_date.dart';
+import 'package:mycycle/core/services/diary_image_storage.dart';
+import 'package:mycycle/features/diary/data/datasources/diary_image_local_datasource.dart';
 import 'package:mycycle/features/diary/data/datasources/diary_local_datasource.dart';
 import 'package:mycycle/features/diary/data/repositories/diary_repository.dart';
 import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
+import 'package:mycycle/features/diary/domain/entities/diary_image.dart';
+import 'package:mycycle/features/diary/domain/entities/diary_list_query.dart';
 import 'package:mycycle/features/support/data/datasources/support_local_datasource.dart';
 import 'package:mycycle/features/support/data/repositories/support_repository.dart';
 import 'package:mycycle/features/support/domain/entities/support_event.dart';
@@ -27,6 +34,7 @@ import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart'
 import 'package:mycycle/features/wishes/data/datasources/wish_local_datasource.dart';
 import 'package:mycycle/features/wishes/data/repositories/wish_repository.dart';
 import 'package:mycycle/features/wishes/domain/entities/wish.dart';
+import 'package:mycycle/core/services/widget/widget_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // --- Core ---
@@ -83,6 +91,19 @@ final wellbeingDataSourceProvider = Provider<WellbeingLocalDataSource>((ref) {
   return WellbeingLocalDataSource(ref.watch(appDatabaseProvider));
 });
 
+final importantDateDataSourceProvider =
+    Provider<ImportantDateLocalDataSource>((ref) {
+  return ImportantDateLocalDataSource(ref.watch(appDatabaseProvider));
+});
+
+final diaryImageDataSourceProvider = Provider<DiaryImageLocalDataSource>((ref) {
+  return DiaryImageLocalDataSource(ref.watch(appDatabaseProvider));
+});
+
+final diaryImageStorageProvider = Provider<DiaryImageStorage>((ref) {
+  return const DiaryImageStorage();
+});
+
 final diaryDataSourceProvider = Provider<DiaryLocalDataSource>((ref) {
   return DiaryLocalDataSource(ref.watch(appDatabaseProvider));
 });
@@ -108,8 +129,17 @@ final wellbeingRepositoryProvider = Provider<WellbeingRepository>((ref) {
   return WellbeingRepository(ref.watch(wellbeingDataSourceProvider));
 });
 
+final importantDateRepositoryProvider =
+    Provider<ImportantDateRepository>((ref) {
+  return ImportantDateRepository(ref.watch(importantDateDataSourceProvider));
+});
+
 final diaryRepositoryProvider = Provider<DiaryRepository>((ref) {
-  return DiaryRepository(ref.watch(diaryDataSourceProvider));
+  return DiaryRepository(
+    ref.watch(diaryDataSourceProvider),
+    ref.watch(diaryImageDataSourceProvider),
+    ref.watch(diaryImageStorageProvider),
+  );
 });
 
 final supportRepositoryProvider = Provider<SupportRepository>((ref) {
@@ -127,6 +157,7 @@ final demoDataSeederProvider = Provider<DemoDataSeeder>((ref) {
     diaryRepo: ref.watch(diaryRepositoryProvider),
     supportRepo: ref.watch(supportRepositoryProvider),
     wishRepo: ref.watch(wishRepositoryProvider),
+    importantDateRepo: ref.watch(importantDateRepositoryProvider),
     settings: ref.watch(settingsServiceProvider),
   );
 });
@@ -160,6 +191,18 @@ final diaryListProvider = FutureProvider<List<DiaryEntry>>((ref) async {
   return ref.watch(diaryRepositoryProvider).getAll();
 });
 
+final diaryQueryProvider =
+    FutureProvider.family<List<DiaryEntry>, DiaryListQuery>((ref, query) async {
+  ref.watch(diaryListProvider);
+  return ref.watch(diaryRepositoryProvider).query(query);
+});
+
+final diaryImagesProvider =
+    FutureProvider.family<List<DiaryImage>, String>((ref, diaryId) async {
+  ref.watch(diaryListProvider);
+  return ref.watch(diaryRepositoryProvider).getImages(diaryId);
+});
+
 final diarySearchProvider =
     FutureProvider.family<List<DiaryEntry>, String>((ref, query) async {
   return ref.watch(diaryRepositoryProvider).search(query);
@@ -172,6 +215,16 @@ final supportEventsProvider =
 
 final wishesProvider = FutureProvider<List<Wish>>((ref) async {
   return ref.watch(wishRepositoryProvider).getAll();
+});
+
+final upcomingImportantDatesProvider =
+    FutureProvider<List<UpcomingImportantDate>>((ref) async {
+  return ref.watch(importantDateRepositoryProvider).getUpcoming();
+});
+
+final importantDatesListProvider =
+    FutureProvider<List<ImportantDate>>((ref) async {
+  return ref.watch(importantDateRepositoryProvider).getAll();
 });
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -187,4 +240,7 @@ void invalidateAllData(WidgetRef ref) {
   ref.invalidate(diaryListProvider);
   ref.invalidate(supportEventsProvider);
   ref.invalidate(wishesProvider);
+  ref.invalidate(importantDatesListProvider);
+  ref.invalidate(upcomingImportantDatesProvider);
+  syncHomeWidget(ref);
 }

@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
+import 'package:mycycle/core/utils/intimacy_analyzer.dart';
+import 'package:mycycle/core/utils/cycle_calculator.dart';
+import 'package:mycycle/core/utils/wellbeing_index.dart';
+import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
 import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
 import 'package:mycycle/shared/widgets/app_card.dart';
 
@@ -31,6 +35,12 @@ class StatisticsScreen extends ConsumerWidget {
             final avgCycle = repo.averageCycleLength(cycles);
             final avgPeriod = repo.averagePeriodLength(cycles);
             final regularity = repo.cycleRegularity(cycles);
+            final calculator = ref.read(cycleCalculatorProvider);
+            final intimacyStats = IntimacyAnalyzer.forMonth(
+              wellbeing: wellbeing,
+              cycles: cycles,
+              calculator: calculator,
+            );
 
             return ListView(
               padding: const EdgeInsets.all(16),
@@ -115,6 +125,45 @@ class StatisticsScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SectionTitle('Близость за месяц'),
+                      if (intimacyStats.total == 0)
+                        const Text('Нет отметок в этом месяце')
+                      else ...[
+                        Text(
+                          'Всего: ${intimacyStats.total}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        Text(
+                          '💦 С эякуляцией: ${intimacyStats.withEjaculation}',
+                        ),
+                        Text(
+                          '🤍 Без эякуляции: ${intimacyStats.withoutEjaculation}',
+                        ),
+                        if (intimacyStats.byPhase.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'По фазам цикла:',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          ...intimacyStats.byPhase.entries.map(
+                            (e) => Text('${e.key.label}: ${e.value}'),
+                          ),
+                        ],
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _WellbeingIndexChartSection(
+                  wellbeing: wellbeing,
+                  cycles: cycles,
+                  calculator: calculator,
+                ),
+                const SizedBox(height: 16),
+                AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       const SectionTitle('График настроения'),
                       SizedBox(
                         height: 200,
@@ -153,6 +202,187 @@ class StatisticsScreen extends ConsumerWidget {
       return 'цикла';
     }
     return 'циклов';
+  }
+}
+
+class _WellbeingIndexChartSection extends StatefulWidget {
+  const _WellbeingIndexChartSection({
+    required this.wellbeing,
+    required this.cycles,
+    required this.calculator,
+  });
+
+  final List<WellbeingEntry> wellbeing;
+  final List<Cycle> cycles;
+  final CycleCalculator calculator;
+
+  @override
+  State<_WellbeingIndexChartSection> createState() =>
+      _WellbeingIndexChartSectionState();
+}
+
+class _WellbeingIndexChartSectionState
+    extends State<_WellbeingIndexChartSection> {
+  IndexChartPeriod _period = IndexChartPeriod.days30;
+
+  @override
+  Widget build(BuildContext context) {
+    final points = WellbeingIndexCalculator.chartPoints(
+      wellbeing: widget.wellbeing,
+      cycles: widget.cycles,
+      calculator: widget.calculator,
+      period: _period,
+    );
+
+    final avg = points.isEmpty
+        ? 0
+        : (points.fold<int>(0, (s, p) => s + p.index) / points.length).round();
+    final level = WellbeingIndexLevel.labelFor(avg);
+
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionTitle('Индекс самочувствия'),
+          if (points.isNotEmpty) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '$avg',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: AppColors.pinkDark,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                Text(
+                  '/100',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.gray,
+                      ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  level,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+          ],
+          Text(
+            WellbeingIndexCalculator.disclaimer,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.gray,
+                ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: IndexChartPeriod.values.map((period) {
+              final selected = _period == period;
+              return ChoiceChip(
+                label: Text(period.label),
+                selected: selected,
+                onSelected: (_) => setState(() => _period = period),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 220,
+            child: _IndexChart(points: points),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IndexChart extends StatelessWidget {
+  const _IndexChart({required this.points});
+
+  final List<IndexChartPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    if (points.isEmpty) {
+      return const Center(child: Text('Нет данных за выбранный период'));
+    }
+
+    return LineChart(
+      LineChartData(
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (spots) => spots.map((spot) {
+              final i = spot.x.toInt();
+              if (i < 0 || i >= points.length) {
+                return const LineTooltipItem('', TextStyle());
+              }
+              final p = points[i];
+              final dayPart = p.cycleDay != null ? ' · день ${p.cycleDay}' : '';
+              return LineTooltipItem(
+                '${p.date.day}.${p.date.month}: ${spot.y.toInt()}$dayPart',
+                const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        gridData: const FlGridData(show: true, drawVerticalLine: false),
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              interval: points.length > 14 ? (points.length / 7).ceilToDouble() : 1,
+              getTitlesWidget: (value, meta) {
+                final i = value.toInt();
+                if (i < 0 || i >= points.length) return const SizedBox();
+                return Text(
+                  '${points[i].date.day}',
+                  style: const TextStyle(fontSize: 10),
+                );
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 32,
+              interval: 20,
+              getTitlesWidget: (value, meta) {
+                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10));
+              },
+            ),
+          ),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        borderData: FlBorderData(show: false),
+        minY: 0,
+        maxY: 100,
+        lineBarsData: [
+          LineChartBarData(
+            spots: List.generate(
+              points.length,
+              (i) => FlSpot(i.toDouble(), points[i].index.toDouble()),
+            ),
+            isCurved: true,
+            color: AppColors.purpleDark,
+            barWidth: 3,
+            dotData: FlDotData(show: points.length <= 31),
+            belowBarData: BarAreaData(
+              show: true,
+              color: AppColors.purple.withValues(alpha: 0.15),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

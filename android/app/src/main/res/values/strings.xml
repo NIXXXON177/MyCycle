@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_small_name">MyCycle</string>
+    <string name="widget_small_desc">День цикла и прогноз</string>
+    <string name="widget_large_name">MyCycle+</string>
+    <string name="widget_large_desc">Цикл, настроение и быстрый чек-ин</string>
+    <string name="widget_cycle_day">День цикла</string>
+    <string name="widget_phase">Фаза</string>
+    <string name="widget_days_until">До месячных</string>
+    <string name="widget_mood">Настроение</string>
+    <string name="widget_accuracy">Прогноз</string>
+    <string name="widget_event">Событие</string>
+    <string name="widget_mood_prompt">Как настроение?</string>
+</resources>

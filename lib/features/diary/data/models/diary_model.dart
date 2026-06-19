@@ -11,6 +11,7 @@ abstract final class DiaryModel {
       mood: MoodLevel.fromValue(map['mood'] as int),
       createdAt: DateTime.parse(map['created_at'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
+      isFavorite: (map['is_favorite'] as int? ?? 0) == 1,
     );
   }
 
@@ -22,6 +23,7 @@ abstract final class DiaryModel {
       'mood': entry.mood.value,
       'created_at': entry.createdAt.toIso8601String(),
       'updated_at': entry.updatedAt.toIso8601String(),
+      'is_favorite': entry.isFavorite ? 1 : 0,
     };
   }
 }

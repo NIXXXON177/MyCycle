@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/shared/widgets/app_logo.dart';
 
 /// Экран ввода PIN-кода при запуске.
