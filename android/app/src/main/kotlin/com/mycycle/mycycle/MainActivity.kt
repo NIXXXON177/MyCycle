@@ -1,5 +1,6 @@
 package com.mycycle.mycycle
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity: FlutterActivity()
+// FlutterFragmentActivity требуется плагину local_auth для биометрии.
+class MainActivity: FlutterFragmentActivity()

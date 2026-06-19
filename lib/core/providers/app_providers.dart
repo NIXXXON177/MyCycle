@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/database/app_database.dart';
 import 'package:mycycle/core/router/app_router.dart';
 import 'package:mycycle/core/services/backup_service.dart';
+import 'package:mycycle/core/services/biometric_service.dart';
 import 'package:mycycle/core/services/demo_data_seeder.dart';
 import 'package:mycycle/core/services/notification_service.dart';
 import 'package:mycycle/core/services/settings_service.dart';
@@ -55,6 +56,9 @@ final backupServiceProvider = Provider<BackupService>((ref) {
 });
 
 final updateServiceProvider = Provider<UpdateService>((ref) => UpdateService());
+
+final biometricServiceProvider =
+    Provider<BiometricService>((ref) => BiometricService());
 
 // --- Data sources ---
 

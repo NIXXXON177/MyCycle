@@ -30,6 +30,24 @@ class _PinScreenState extends ConsumerState<PinScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+    // Автоматически предлагаем биометрию при запуске, если она включена.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (ref.read(settingsServiceProvider).biometricEnabled) {
+        _tryBiometric();
+      }
+    });
+  }
+
+  Future<void> _tryBiometric() async {
+    final settings = ref.read(settingsServiceProvider);
+    if (!settings.biometricEnabled) return;
+    final service = ref.read(biometricServiceProvider);
+    if (!await service.isAvailable()) return;
+    final ok = await service.authenticate();
+    if (ok && mounted) {
+      HapticFeedback.lightImpact();
+      context.go(AppRoutes.home);
+    }
   }
 
   @override
@@ -93,6 +111,14 @@ class _PinScreenState extends ConsumerState<PinScreen>
               ],
               const SizedBox(height: 48),
               _buildNumpad(),
+              if (ref.watch(settingsServiceProvider).biometricEnabled) ...[
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  onPressed: _tryBiometric,
+                  icon: const Icon(Icons.fingerprint),
+                  label: const Text('Войти по биометрии'),
+                ),
+              ],
             ],
           ),
         ),

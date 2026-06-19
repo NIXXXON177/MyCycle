@@ -73,9 +73,18 @@ class SettingsService {
   Future<void> removePin() async {
     await _prefs.setBool(PrefsKeys.pinEnabled, false);
     await _prefs.remove(PrefsKeys.pinCode);
+    // Без PIN биометрическая разблокировка не имеет смысла.
+    await _prefs.setBool(PrefsKeys.biometricEnabled, false);
   }
 
   bool verifyPin(String input) => pinCode == input;
+
+  bool get biometricEnabled =>
+      _prefs.getBool(PrefsKeys.biometricEnabled) ?? false;
+
+  Future<void> setBiometricEnabled(bool value) async {
+    await _prefs.setBool(PrefsKeys.biometricEnabled, value);
+  }
 
   int get defaultCycleLength =>
       _prefs.getInt(PrefsKeys.defaultCycleLength) ?? 28;

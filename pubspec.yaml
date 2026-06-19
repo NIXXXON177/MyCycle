@@ -1,7 +1,7 @@
 name: mycycle
 description: MyCycle — персональное приложение для отслеживания менструального цикла.
 publish_to: 'none'
-version: 1.1.0+1
+version: 1.2.0+1
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -29,6 +29,7 @@ dependencies:
   package_info_plus: ^8.1.2
   http: ^1.2.2
   open_filex: ^4.6.0
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:

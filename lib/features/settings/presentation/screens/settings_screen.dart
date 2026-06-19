@@ -68,12 +68,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SectionTitle('Безопасность'),
           AppCard(
-            child: ListTile(
-              leading: const Icon(Icons.lock_outline),
-              title: const Text('PIN-код'),
-              subtitle: Text(settings.pinEnabled ? 'Включён' : 'Выключен'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _showPinDialog(context, ref),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: const Text('PIN-код'),
+                  subtitle: Text(settings.pinEnabled ? 'Включён' : 'Выключен'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showPinDialog(context, ref),
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  secondary: const Icon(Icons.fingerprint),
+                  title: const Text('Вход по биометрии'),
+                  subtitle: Text(
+                    settings.pinEnabled
+                        ? 'Отпечаток или лицо вместо PIN'
+                        : 'Сначала включите PIN-код',
+                  ),
+                  value: settings.pinEnabled && settings.biometricEnabled,
+                  onChanged: settings.pinEnabled ? _toggleBiometric : null,
+                ),
+              ],
             ),
           ),
           const SectionTitle('Данные'),
@@ -165,6 +181,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _setTheme(WidgetRef ref, ThemeMode mode) async {    await ref.read(settingsServiceProvider).setThemeMode(mode);
     ref.read(themeModeProvider.notifier).state = mode;
+  }
+
+  Future<void> _toggleBiometric(bool value) async {
+    final settings = ref.read(settingsServiceProvider);
+    if (value) {
+      final available = await ref.read(biometricServiceProvider).isAvailable();
+      if (!available) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Биометрия недоступна или не настроена'),
+            ),
+          );
+        }
+        return;
+      }
+    }
+    await settings.setBiometricEnabled(value);
+    if (mounted) setState(() {});
   }
 
   Future<void> _showPinDialog(BuildContext context, WidgetRef ref) async {
