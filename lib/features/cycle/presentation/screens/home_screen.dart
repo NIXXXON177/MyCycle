@@ -5,6 +5,7 @@ import 'package:mycycle/core/constants/app_colors.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/router/app_router.dart';
 import 'package:mycycle/core/utils/date_utils.dart';
+import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
 import 'package:mycycle/shared/widgets/app_card.dart';
 
@@ -106,6 +107,8 @@ class _HomeContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        const _PeriodQuickAction(),
+        const SizedBox(height: 16),
         AppCard(
           color: AppColors.pink.withValues(alpha: 0.3),
           child: Column(
@@ -220,5 +223,106 @@ class _HomeContent extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// Карточка быстрой отметки начала/окончания месячных.
+class _PeriodQuickAction extends ConsumerWidget {
+  const _PeriodQuickAction();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cyclesAsync = ref.watch(cyclesProvider);
+    return cyclesAsync.maybeWhen(
+      data: (cycles) => _build(context, ref, cycles),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _build(BuildContext context, WidgetRef ref, List<Cycle> cycles) {
+    final ongoing = _ongoingCycle(cycles);
+    final isOngoing = ongoing != null;
+
+    return AppCard(
+      color: AppColors.pink.withValues(alpha: 0.18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            isOngoing ? 'Месячные идут' : 'Быстрая отметка',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: () => isOngoing
+                ? _endPeriod(context, ref, ongoing)
+                : _startPeriod(context, ref),
+            icon: Icon(
+              isOngoing ? Icons.stop_circle_outlined : Icons.water_drop,
+            ),
+            label: Text(
+              isOngoing
+                  ? 'Отметить окончание'
+                  : 'Отметить начало месячных',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Возвращает незавершённый недавний цикл (месячные ещё идут), иначе null.
+  Cycle? _ongoingCycle(List<Cycle> cycles) {
+    Cycle? latest;
+    for (final c in cycles) {
+      if (latest == null || c.startDate.isAfter(latest.startDate)) {
+        latest = c;
+      }
+    }
+    if (latest == null || latest.endDate != null) return null;
+
+    final daysSince = AppDateUtils.daysBetween(latest.startDate, DateTime.now());
+    // Запись старше 12 дней без окончания считаем завершённой давно.
+    if (daysSince < 0 || daysSince > 12) return null;
+    return latest;
+  }
+
+  Future<void> _startPeriod(BuildContext context, WidgetRef ref) async {
+    final today = AppDateUtils.dateOnly(DateTime.now());
+    await ref.read(cycleRepositoryProvider).addCycle(startDate: today);
+    await _afterChange(ref);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Отмечено начало месячных')),
+      );
+    }
+  }
+
+  Future<void> _endPeriod(
+    BuildContext context,
+    WidgetRef ref,
+    Cycle cycle,
+  ) async {
+    final today = AppDateUtils.dateOnly(DateTime.now());
+    await ref
+        .read(cycleRepositoryProvider)
+        .updateCycle(cycle.copyWith(endDate: today));
+    await _afterChange(ref);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Отмечено окончание месячных')),
+      );
+    }
+  }
+
+  Future<void> _afterChange(WidgetRef ref) async {
+    invalidateAllData(ref);
+    final settings = ref.read(settingsServiceProvider);
+    final prediction = await ref.read(cycleRepositoryProvider).getPrediction();
+    await ref.read(notificationServiceProvider).scheduleReminders(
+          settings: settings.reminderSettings,
+          prediction: prediction,
+        );
   }
 }

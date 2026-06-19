@@ -11,20 +11,30 @@ import 'package:mycycle/shared/widgets/app_card.dart';
 
 /// Экран отметки ежедневного самочувствия.
 class WellbeingScreen extends ConsumerStatefulWidget {
-  const WellbeingScreen({super.key});
+  const WellbeingScreen({super.key, this.initialDate});
+
+  /// Дата, открываемая по умолчанию (например, из календаря).
+  final DateTime? initialDate;
 
   @override
   ConsumerState<WellbeingScreen> createState() => _WellbeingScreenState();
 }
 
 class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
   MoodLevel _mood = MoodLevel.normal;
   EnergyLevel _energy = EnergyLevel.medium;
   PainLevel _pain = PainLevel.none;
   final Set<PainLocation> _painLocations = {};
   final _noteController = TextEditingController();
   bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.initialDate ?? DateTime.now();
+    _loadEntry();
+  }
 
   @override
   void dispose() {
@@ -36,6 +46,7 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
     final entry = await ref
         .read(wellbeingRepositoryProvider)
         .getByDate(_selectedDate);
+    if (!mounted) return;
     setState(() {
       if (entry != null) {
         _mood = entry.mood;
@@ -58,10 +69,6 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) {
-      _loadEntry();
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Самочувствие'),
@@ -81,12 +88,15 @@ class _WellbeingScreenState extends ConsumerState<WellbeingScreen> {
                   _selectedDate = picked;
                   _loaded = false;
                 });
+                _loadEntry();
               }
             },
           ),
         ],
       ),
-      body: ListView(
+      body: !_loaded
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Center(

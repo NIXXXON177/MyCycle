@@ -9,6 +9,9 @@ import 'package:mycycle/shared/widgets/app_card.dart';
 class PatternsScreen extends ConsumerWidget {
   const PatternsScreen({super.key});
 
+  /// Иконки для инсайтов — чередуются, чтобы карточки не сливались.
+  static const _icons = ['✨', '🌙', '💡', '🌸', '📈', '💜', '🌿'];
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cyclesAsync = ref.watch(cyclesProvider);
@@ -27,7 +30,7 @@ class PatternsScreen extends ConsumerWidget {
           error: (e, _) => const ErrorView(message: 'Ошибка загрузки'),
           data: (wellbeing) {
             final repo = ref.read(cycleRepositoryProvider);
-            final analyzer = const PatternsAnalyzer();
+            const analyzer = PatternsAnalyzer();
             final insights = analyzer.analyze(
               cycles: cycles,
               wellbeing: wellbeing,
@@ -35,26 +38,53 @@ class PatternsScreen extends ConsumerWidget {
               averagePeriodLength: repo.averagePeriodLength(cycles),
             );
 
+            if (insights.isEmpty) {
+              return const EmptyView(
+                message: 'Пока недостаточно данных для выводов.\n'
+                    'Отмечай цикл и самочувствие — закономерности '
+                    'появятся позже.',
+                icon: Icons.auto_awesome,
+              );
+            }
+
             return ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: insights.length,
+              itemCount: insights.length + 1,
               itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12, left: 4),
+                    child: Text(
+                      'На основе ${cycles.length} '
+                      '${_cyclesWord(cycles.length)} и ${wellbeing.length} '
+                      '${_entriesWord(wellbeing.length)} самочувствия',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray,
+                          ),
+                    ),
+                  );
+                }
+
+                final i = index - 1;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: AppCard(
-                    color: index.isEven
+                    color: i.isEven
                         ? AppColors.pink.withValues(alpha: 0.2)
                         : AppColors.purple.withValues(alpha: 0.2),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(right: 12, top: 2),
-                          child: Text('✨', style: TextStyle(fontSize: 24)),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12, top: 2),
+                          child: Text(
+                            _icons[i % _icons.length],
+                            style: const TextStyle(fontSize: 24),
+                          ),
                         ),
                         Expanded(
                           child: Text(
-                            insights[index],
+                            insights[i],
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
@@ -68,5 +98,25 @@ class PatternsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  static String _cyclesWord(int n) {
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    if (mod10 == 1 && mod100 != 11) return 'цикла';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+      return 'циклов';
+    }
+    return 'циклов';
+  }
+
+  static String _entriesWord(int n) {
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    if (mod10 == 1 && mod100 != 11) return 'записи';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+      return 'записей';
+    }
+    return 'записей';
   }
 }

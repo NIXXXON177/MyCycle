@@ -35,6 +35,27 @@ class StatisticsScreen extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                if (cycles.length < 3) ...[
+                  AppCard(
+                    color: AppColors.moodNormal.withValues(alpha: 0.22),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline,
+                            color: AppColors.darkGray),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Пока мало данных (${cycles.length} '
+                            '${_cycleWord(cycles.length)}). Прогнозы и средние '
+                            'значения станут точнее после 3+ циклов.',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 Row(
                   children: [
                     Expanded(
@@ -122,6 +143,17 @@ class StatisticsScreen extends ConsumerWidget {
       ),
     );
   }
+
+  /// Склонение слова «цикл» для предупреждения.
+  static String _cycleWord(int n) {
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    if (mod10 == 1 && mod100 != 11) return 'цикл';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+      return 'цикла';
+    }
+    return 'циклов';
+  }
 }
 
 class _MoodChart extends StatelessWidget {
@@ -138,6 +170,23 @@ class _MoodChart extends StatelessWidget {
 
     return LineChart(
       LineChartData(
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (spots) => spots.map((spot) {
+              final i = spot.x.toInt();
+              final prefix = (i >= 0 && i < recent.length)
+                  ? '${recent[i].date.day}.${recent[i].date.month}: '
+                  : '';
+              return LineTooltipItem(
+                '$prefix${spot.y.toInt()}',
+                const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
         gridData: const FlGridData(show: true, drawVerticalLine: false),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -207,6 +256,23 @@ class _EnergyChart extends StatelessWidget {
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
         maxY: 3,
+        barTouchData: BarTouchData(
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              final i = group.x;
+              final prefix = (i >= 0 && i < recent.length)
+                  ? '${recent[i].date.day}.${recent[i].date.month}: '
+                  : '';
+              return BarTooltipItem(
+                '$prefix${rod.toY.toInt()}',
+                const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            },
+          ),
+        ),
         gridData: const FlGridData(show: false),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(

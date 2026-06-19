@@ -229,15 +229,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _export(BuildContext context, WidgetRef ref) async {
-    final path = await ref.read(backupServiceProvider).exportDatabase();
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            path != null ? 'Сохранено: $path' : 'Экспорт отменён',
+    try {
+      final path = await ref.read(backupServiceProvider).exportDatabase();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              path != null ? 'Сохранено: $path' : 'Экспорт отменён',
+            ),
           ),
-        ),
-      );
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не удалось сохранить: $e')),
+        );
+      }
     }
   }
 
@@ -264,16 +272,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (confirm != true) return;
 
-    final success =
-        await ref.read(backupServiceProvider).importDatabase();
-    invalidateAllData(ref);
+    try {
+      final success =
+          await ref.read(backupServiceProvider).importDatabase();
+      invalidateAllData(ref);
 
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(success ? 'Данные восстановлены' : 'Импорт отменён'),
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(success ? 'Данные восстановлены' : 'Импорт отменён'),
+          ),
+        );
+      }
+    } catch (e) {
+      invalidateAllData(ref);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не удалось импортировать: $e')),
+        );
+      }
     }
   }
 }

@@ -24,13 +24,17 @@ class AppUpdateInfo {
   final String? notes;
 
   factory AppUpdateInfo.fromJson(Map<String, dynamic> json) {
+    final code = json['versionCode'];
     return AppUpdateInfo(
-      versionCode: json['versionCode'] as int,
-      versionName: json['versionName'] as String,
-      apkUrl: json['apkUrl'] as String,
-      notes: json['notes'] as String?,
+      versionCode: code is int ? code : int.tryParse('$code') ?? 0,
+      versionName: json['versionName']?.toString() ?? '',
+      apkUrl: json['apkUrl']?.toString() ?? '',
+      notes: json['notes']?.toString(),
     );
   }
+
+  /// Минимальная валидность: есть номер сборки и ссылка на APK.
+  bool get isValid => versionCode > 0 && apkUrl.isNotEmpty;
 }
 
 /// Проверка и установка обновлений через GitHub Releases.
@@ -63,10 +67,11 @@ class UpdateService {
 
       if (response.statusCode != 200) return null;
 
-      final update = AppUpdateInfo.fromJson(
-        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
-      );
-      if (update.versionCode <= currentCode) return null;
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      if (decoded is! Map<String, dynamic>) return null;
+
+      final update = AppUpdateInfo.fromJson(decoded);
+      if (!update.isValid || update.versionCode <= currentCode) return null;
       return update;
     } catch (e) {
       debugPrint('Manifest check failed: $e');
@@ -83,41 +88,55 @@ class UpdateService {
       throw Exception('GitHub вернул код ${response.statusCode}');
     }
 
-    final release =
-        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
-    final tag = release['tag_name'] as String? ?? '';
-    final parsed = _parseReleaseTag(tag);
-    if (parsed == null) return null;
+    try {
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      if (decoded is! Map<String, dynamic>) return null;
 
-    final (versionName, versionCode) = parsed;
-    if (versionCode <= currentCode) return null;
+      final tag = decoded['tag_name']?.toString() ?? '';
+      final parsed = _parseReleaseTag(tag);
+      if (parsed == null) return null;
 
-    final assets = release['assets'] as List<dynamic>? ?? [];
-    String? apkUrl;
+      final (versionName, versionCode) = parsed;
+      if (versionCode <= currentCode) return null;
 
-    for (final asset in assets) {
-      final map = asset as Map<String, dynamic>;
-      final name = map['name'] as String? ?? '';
-      if (name.toLowerCase().endsWith('.apk')) {
-        apkUrl = map['browser_download_url'] as String?;
-        break;
+      final assets = decoded['assets'];
+      String? apkUrl;
+
+      if (assets is List) {
+        for (final asset in assets) {
+          if (asset is! Map) continue;
+          final name = asset['name']?.toString() ?? '';
+          if (name.toLowerCase().endsWith('.apk')) {
+            apkUrl = asset['browser_download_url']?.toString();
+            break;
+          }
+        }
       }
+
+      apkUrl ??=
+          UpdateConfig.manifestUrl.replaceAll('manifest.json', 'MyCycle.apk');
+
+      return AppUpdateInfo(
+        versionCode: versionCode,
+        versionName: versionName,
+        apkUrl: apkUrl,
+        notes: decoded['body']?.toString().trim(),
+      );
+    } catch (e) {
+      debugPrint('GitHub release parse failed: $e');
+      return null;
     }
-
-    apkUrl ??= UpdateConfig.manifestUrl.replaceAll('manifest.json', 'MyCycle.apk');
-
-    return AppUpdateInfo(
-      versionCode: versionCode,
-      versionName: versionName,
-      apkUrl: apkUrl,
-      notes: (release['body'] as String?)?.trim(),
-    );
   }
 
+  /// Разбирает тег релиза вида `v1.2.3.45` → (versionName: "1.2.3", code: 45).
+  /// Возвращает null, если в теге нет числового хвоста после последней точки.
   (String, int)? _parseReleaseTag(String tag) {
-    final normalized = tag.startsWith('v') ? tag.substring(1) : tag;
+    final normalized =
+        (tag.startsWith('v') ? tag.substring(1) : tag).trim();
+    if (normalized.isEmpty) return null;
+
     final separator = normalized.lastIndexOf('.');
-    if (separator <= 0) return null;
+    if (separator <= 0 || separator == normalized.length - 1) return null;
 
     final versionName = normalized.substring(0, separator);
     final versionCode = int.tryParse(normalized.substring(separator + 1));

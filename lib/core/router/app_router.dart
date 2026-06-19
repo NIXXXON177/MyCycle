@@ -22,6 +22,7 @@ abstract final class AppRoutes {
   static const pin = '/pin';
   static const calendar = '/calendar';
   static const wellbeing = '/wellbeing';
+  static const wellbeingDay = '/wellbeing/day';
   static const diary = '/diary';
   static const diaryEdit = '/diary/edit';
   static const statistics = '/statistics';
@@ -117,6 +118,18 @@ GoRouter createRouter({required bool pinRequired}) {
         builder: (context, state) {
           final id = state.uri.queryParameters['id'];
           return DiaryEditScreen(entryId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.wellbeingDay,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final raw = state.uri.queryParameters['date'];
+          final millis = int.tryParse(raw ?? '');
+          final date = millis != null
+              ? DateTime.fromMillisecondsSinceEpoch(millis)
+              : DateTime.now();
+          return WellbeingScreen(initialDate: date);
         },
       ),
       GoRoute(

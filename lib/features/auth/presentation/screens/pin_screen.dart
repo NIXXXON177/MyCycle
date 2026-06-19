@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
@@ -14,9 +17,26 @@ class PinScreen extends ConsumerStatefulWidget {
   ConsumerState<PinScreen> createState() => _PinScreenState();
 }
 
-class _PinScreenState extends ConsumerState<PinScreen> {
+class _PinScreenState extends ConsumerState<PinScreen>
+    with SingleTickerProviderStateMixin {
   String _pin = '';
   String? _error;
+  late final AnimationController _shake;
+
+  @override
+  void initState() {
+    super.initState();
+    _shake = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+
+  @override
+  void dispose() {
+    _shake.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +59,33 @@ class _PinScreenState extends ConsumerState<PinScreen> {
               const SizedBox(height: 8),
               const Text('Введите PIN-код'),
               const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (i) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: i < _pin.length
-                          ? AppColors.pinkDark
-                          : AppColors.lightGray,
-                    ),
+              AnimatedBuilder(
+                animation: _shake,
+                builder: (context, child) {
+                  final dx = math.sin(_shake.value * math.pi * 4) *
+                      12 *
+                      (1 - _shake.value);
+                  return Transform.translate(
+                    offset: Offset(dx, 0),
+                    child: child,
                   );
-                }),
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(4, (i) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: i < _pin.length
+                            ? AppColors.pinkDark
+                            : AppColors.lightGray,
+                      ),
+                    );
+                  }),
+                ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
@@ -84,6 +116,7 @@ class _PinScreenState extends ConsumerState<PinScreen> {
 
         return TextButton(
           onPressed: () {
+            HapticFeedback.selectionClick();
             if (key == '⌫') {
               setState(() {
                 if (_pin.isNotEmpty) {
@@ -108,8 +141,11 @@ class _PinScreenState extends ConsumerState<PinScreen> {
   void _verify() {
     final settings = ref.read(settingsServiceProvider);
     if (settings.verifyPin(_pin)) {
+      HapticFeedback.lightImpact();
       context.go(AppRoutes.home);
     } else {
+      HapticFeedback.heavyImpact();
+      _shake.forward(from: 0);
       setState(() {
         _error = 'Неверный PIN';
         _pin = '';

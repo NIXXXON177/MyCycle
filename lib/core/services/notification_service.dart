@@ -20,7 +20,10 @@ class NotificationService {
     if (_initialized) return;
 
     tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Europe/Moscow'));
+    // База — UTC. Конкретные напоминания планируем как абсолютный момент,
+    // вычисленный из локального времени устройства (см. _toTz). Так уведомления
+    // приходят в правильное местное время в любом часовом поясе, а не только в МСК.
+    tz.setLocalLocation(tz.UTC);
 
     const androidSettings =
         AndroidInitializationSettings('@drawable/ic_launcher');
@@ -157,25 +160,23 @@ class NotificationService {
     );
   }
 
+  /// Преобразует локальное «настенное» время устройства в абсолютный момент.
+  /// Планировщик настроен на UTC, поэтому момент срабатывает корректно
+  /// независимо от часового пояса пользователя.
+  tz.TZDateTime _toTz(DateTime localWallClock) =>
+      tz.TZDateTime.from(localWallClock.toUtc(), tz.UTC);
+
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduled =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    final now = DateTime.now();
+    var scheduled = DateTime(now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
-    return scheduled;
+    return _toTz(scheduled);
   }
 
   tz.TZDateTime _tzFromDate(DateTime date, int hour, int minute) {
-    return tz.TZDateTime(
-      tz.local,
-      date.year,
-      date.month,
-      date.day,
-      hour,
-      minute,
-    );
+    return _toTz(DateTime(date.year, date.month, date.day, hour, minute));
   }
 
   Future<void> cancelAll() async {

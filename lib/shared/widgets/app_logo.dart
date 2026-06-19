@@ -56,19 +56,23 @@ class _AppLogoPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width * 0.42;
-    final breathe = 0.96 + 0.04 * math.sin(progress * math.pi * 2);
+    final w = size.width;
+    final center = Offset(w / 2, size.height / 2);
+    final radius = w * 0.42;
+    // Едва заметное «дыхание» — спокойнее прежнего.
+    final breathe = 0.99 + 0.01 * math.sin(progress * math.pi * 2);
 
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.scale(breathe);
 
+    // Мягкая тень под кругом.
     final shadow = Paint()
-      ..color = AppColors.pinkDark.withValues(alpha: 0.18)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
-    canvas.drawCircle(const Offset(0, 6), radius * 0.92, shadow);
+      ..color = AppColors.pinkDark.withValues(alpha: 0.16)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16);
+    canvas.drawCircle(const Offset(0, 8), radius * 0.94, shadow);
 
+    // Градиентный круг-основа.
     final bg = Paint()
       ..shader = const LinearGradient(
         begin: Alignment.topLeft,
@@ -77,60 +81,62 @@ class _AppLogoPainter extends CustomPainter {
       ).createShader(Rect.fromCircle(center: Offset.zero, radius: radius));
     canvas.drawCircle(Offset.zero, radius, bg);
 
-    final ringPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.045
-      ..strokeCap = StrokeCap.round
-      ..shader = SweepGradient(
-        startAngle: -math.pi / 2,
-        endAngle: 3 * math.pi / 2,
+    // Лёгкий блик сверху для объёма.
+    final glow = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.3, -0.4),
+        radius: 0.9,
         colors: [
-          Colors.white.withValues(alpha: 0.95),
           Colors.white.withValues(alpha: 0.35),
-          Colors.white.withValues(alpha: 0.95),
+          Colors.white.withValues(alpha: 0.0),
         ],
-        transform: GradientRotation(progress * math.pi * 2),
-      ).createShader(Rect.fromCircle(center: Offset.zero, radius: radius * 0.72));
+      ).createShader(Rect.fromCircle(center: Offset.zero, radius: radius));
+    canvas.drawCircle(Offset.zero, radius, glow);
 
-    canvas.drawArc(
-      Rect.fromCircle(center: Offset.zero, radius: radius * 0.72),
-      -math.pi / 2,
-      math.pi * 1.65,
-      false,
-      ringPaint,
-    );
+    final ringRadius = radius * 0.66;
+    final stroke = w * 0.052;
+    final ringRect = Rect.fromCircle(center: Offset.zero, radius: ringRadius);
 
-    final dotAngle = -math.pi / 2 + progress * math.pi * 2;
-    final dotCenter = Offset(
-      math.cos(dotAngle) * radius * 0.72,
-      math.sin(dotAngle) * radius * 0.72,
-    );
-    canvas.drawCircle(
-      dotCenter,
-      size.width * 0.055,
-      Paint()..color = Colors.white,
-    );
-    canvas.drawCircle(
-      dotCenter,
-      size.width * 0.03,
-      Paint()..color = AppColors.pinkDark,
-    );
-
-    final petalPaint = Paint()..color = Colors.white.withValues(alpha: 0.92);
-    for (var i = 0; i < 5; i++) {
-      final angle = (i / 5) * math.pi * 2 - math.pi / 2;
-      final petalCenter = Offset(
-        math.cos(angle) * radius * 0.28,
-        math.sin(angle) * radius * 0.28,
-      );
-      canvas.drawCircle(petalCenter, size.width * 0.07, petalPaint);
-    }
-
+    // Тонкое кольцо-трек цикла.
     canvas.drawCircle(
       Offset.zero,
-      size.width * 0.1,
-      Paint()..color = AppColors.pinkDark,
+      ringRadius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..color = Colors.white.withValues(alpha: 0.28),
     );
+
+    // Дуга-«комета»: яркая у точки и затухающая к хвосту.
+    final headAngle = -math.pi / 2 + progress * math.pi * 2;
+    const trail = math.pi * 1.5;
+    canvas.drawArc(
+      ringRect,
+      headAngle - trail,
+      trail,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.round
+        ..shader = SweepGradient(
+          startAngle: 0,
+          endAngle: trail,
+          colors: [
+            Colors.white.withValues(alpha: 0.0),
+            Colors.white.withValues(alpha: 0.95),
+          ],
+          transform: GradientRotation(headAngle - trail),
+        ).createShader(ringRect),
+    );
+
+    // Точка-день на голове дуги: белая с розовым ядром.
+    final dot = Offset(
+      math.cos(headAngle) * ringRadius,
+      math.sin(headAngle) * ringRadius,
+    );
+    canvas.drawCircle(dot, w * 0.075, Paint()..color = Colors.white);
+    canvas.drawCircle(dot, w * 0.038, Paint()..color = AppColors.pinkDark);
 
     canvas.restore();
   }

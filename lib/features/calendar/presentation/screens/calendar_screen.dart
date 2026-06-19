@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/constants/app_colors.dart';
 import 'package:mycycle/core/enums/pain_level.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
+import 'package:mycycle/core/router/app_router.dart';
 import 'package:mycycle/core/utils/date_utils.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
 import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
@@ -156,21 +158,35 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final entry = wellbeing.where(
       (w) => AppDateUtils.isSameDay(w.date, day),
     );
+    final cycleDay = _cycleDayFor(day, cycles);
 
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
+      builder: (sheetContext) => Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              AppDateUtils.formatDate(day),
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    AppDateUtils.formatDate(day),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                if (cycleDay != null)
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    backgroundColor: AppColors.pink.withValues(alpha: 0.3),
+                    label: Text('День $cycleDay цикла'),
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
             if (repo.isPeriodDay(cycles, day))
@@ -211,10 +227,56 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             ] else
               const Text('Самочувствие не отмечено'),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonalIcon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  _openWellbeing(day);
+                },
+                icon: Icon(
+                  entry.isEmpty ? Icons.add : Icons.edit_outlined,
+                ),
+                label: Text(
+                  entry.isEmpty
+                      ? 'Записать самочувствие'
+                      : 'Изменить самочувствие',
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  /// Открывает экран самочувствия для конкретного дня.
+  void _openWellbeing(DateTime day) {
+    final date = AppDateUtils.dateOnly(day);
+    context.push(
+      '${AppRoutes.wellbeingDay}?date=${date.millisecondsSinceEpoch}',
+    );
+  }
+
+  /// Номер дня цикла для произвольной даты (1 = день начала месячных).
+  /// null, если до даты ещё не было ни одного отмеченного цикла.
+  int? _cycleDayFor(DateTime day, List<Cycle> cycles) {
+    final target = AppDateUtils.dateOnly(day);
+    Cycle? current;
+    for (final c in cycles) {
+      final start = AppDateUtils.dateOnly(c.startDate);
+      if (start.isAfter(target)) continue;
+      if (current == null ||
+          start.isAfter(AppDateUtils.dateOnly(current.startDate))) {
+        current = c;
+      }
+    }
+    if (current == null) return null;
+    final dayNumber = AppDateUtils.daysBetween(current.startDate, target) + 1;
+    // Не показываем нереалистично большие значения (между циклами пропуск).
+    if (dayNumber < 1 || dayNumber > 60) return null;
+    return dayNumber;
   }
 }
 

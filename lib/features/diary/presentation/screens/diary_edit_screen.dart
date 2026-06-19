@@ -24,6 +24,12 @@ class _DiaryEditScreenState extends ConsumerState<DiaryEditScreen> {
   bool _loaded = false;
 
   @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
     super.dispose();
@@ -44,8 +50,6 @@ class _DiaryEditScreenState extends ConsumerState<DiaryEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) _load();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(_existing == null ? 'Новая запись' : 'Редактировать'),
@@ -129,7 +133,12 @@ class _DiaryEditScreenState extends ConsumerState<DiaryEditScreen> {
     }
 
     invalidateAllData(ref);
-    if (mounted) context.pop();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Запись сохранена')),
+      );
+      context.pop();
+    }
   }
 
   Future<void> _delete() async {
