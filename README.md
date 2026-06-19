@@ -20,13 +20,14 @@ flutter run
 
 ## Сборка APK локально
 
-Используйте тот же keystore, что и в CI (`android/mycycle-release.jks`):
+Keystore хранится локально в `android/mycycle-release.jks` (не в git).  
+Переменные для подписи совпадают с секретами в GitHub Actions.
 
 ```powershell
-$env:ANDROID_KEYSTORE_PATH = "android/mycycle-release.jks"
-$env:ANDROID_KEYSTORE_PASSWORD = "MyCycle2026!"
+$env:ANDROID_KEYSTORE_PATH = "mycycle-release.jks"
+$env:ANDROID_KEYSTORE_PASSWORD = "<из GitHub Secrets>"
 $env:ANDROID_KEY_ALIAS = "mycycle"
-$env:ANDROID_KEY_PASSWORD = "MyCycle2026!"
+$env:ANDROID_KEY_PASSWORD = "<из GitHub Secrets>"
 flutter build apk --release
 ```
 
