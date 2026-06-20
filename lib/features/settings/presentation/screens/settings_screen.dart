@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mycycle/core/backup/backup_manifest.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/router/app_router.dart';
 import 'package:mycycle/shared/widgets/app_card.dart';
@@ -17,11 +18,18 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   PackageInfo? _packageInfo;
   bool _checkingUpdate = false;
+  int _versionTapCount = 0;
+  bool _generatingStressData = false;
+  bool _devModeUnlocked = false;
 
   @override
   void initState() {
     super.initState();
     _loadPackageInfo();
+    Future.microtask(() {
+      final unlocked = ref.read(settingsServiceProvider).developerModeUnlocked;
+      if (unlocked && mounted) setState(() => _devModeUnlocked = true);
+    });
   }
 
   Future<void> _loadPackageInfo() async {
@@ -33,6 +41,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final security = ref.watch(securityProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final devMode = _devModeUnlocked;
     final versionLabel = _packageInfo == null
         ? 'Загрузка...'
         : '${_packageInfo!.version} (${_packageInfo!.buildNumber})';
@@ -98,21 +107,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.upload_file),
-                  title: const Text('Экспорт базы данных'),
-                  subtitle: const Text('Сохранить резервную копию'),
+                  leading: const Icon(Icons.archive_outlined),
+                  title: const Text('Экспорт резервной копии'),
+                  subtitle: const Text(
+                    'ZIP: база, фото, настройки (Backup v2)',
+                  ),
                   onTap: () => _export(context, ref),
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.download),
-                  title: const Text('Импорт базы данных'),
-                  subtitle: const Text('Восстановить из файла'),
-                  onTap: () => _import(context, ref),
+                  leading: const Icon(Icons.unarchive_outlined),
+                  title: const Text('Восстановить из копии'),
+                  subtitle: const Text('ZIP или старый файл .db'),
+                  onTap: () => _showImportOptions(context, ref),
                 ),
               ],
             ),
           ),
+          if (devMode) ...[
+            const SectionTitle('Режим разработчика'),
+            AppCard(
+              child: ListTile(
+                leading: _generatingStressData
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.science_outlined),
+                title: const Text('Сгенерировать тестовые данные'),
+                subtitle: const Text(
+                  '1000 дневник · 500 самочувствие · 300 фото · 200 хотелок',
+                ),
+                onTap: _generatingStressData
+                    ? null
+                    : () => _generateStressData(context, ref),
+              ),
+            ),
+          ],
           const SectionTitle('Приложение'),
           AppCard(
             child: Column(
@@ -121,6 +153,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   leading: const Icon(Icons.info_outline),
                   title: const Text('Версия'),
                   subtitle: Text(versionLabel),
+                  onTap: () => _onVersionTap(ref),
                 ),
                 ListTile(
                   leading: _checkingUpdate
@@ -139,7 +172,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ],
             ),
           ),
-          const SectionTitle('Уведомления'),          AppCard(
+          const SectionTitle('Уведомления'),
+          AppCard(
             child: ListTile(
               leading: const Icon(Icons.notifications_outlined),
               title: const Text('Напоминания'),
@@ -276,9 +310,103 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  Future<void> _onVersionTap(WidgetRef ref) async {
+    _versionTapCount++;
+    if (_versionTapCount >= 7) {
+      await ref.read(settingsServiceProvider).setDeveloperModeUnlocked(true);
+      if (mounted) {
+        setState(() {
+          _versionTapCount = 0;
+          _devModeUnlocked = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Режим разработчика включён')),
+        );
+      }
+    }
+  }
+
+  Future<void> _generateStressData(BuildContext context, WidgetRef ref) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Тестовые данные'),
+        content: const Text(
+          'Будет добавлено много записей для проверки производительности. '
+          'Продолжить?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Сгенерировать'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    setState(() => _generatingStressData = true);
+    try {
+      await ref.read(stressTestSeederProvider).generate();
+      invalidateAllData(ref);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Тестовые данные добавлены')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _generatingStressData = false);
+    }
+  }
+
   Future<void> _export(BuildContext context, WidgetRef ref) async {
     try {
-      final path = await ref.read(backupServiceProvider).exportDatabase();
+      final preview = await ref.read(backupServiceProvider).previewExport();
+      if (!context.mounted) return;
+
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Резервная копия'),
+          content: Text(
+            'Размер резервной копии: ${preview.formattedSize}\n'
+            'Фотографий: ${preview.photos}\n'
+            'Записей дневника: ${preview.diaryEntries}\n'
+            'Записей самочувствия: ${preview.wellbeingEntries}\n'
+            'Циклов: ${preview.cycles}\n\n'
+            'Временно потребуется ~${preview.formattedTemporarySpace} '
+            'свободного места.\n\n'
+            'Будет сохранён ZIP-архив с базой, фото и настройками.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Отмена'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Экспортировать'),
+            ),
+          ],
+        ),
+      );
+      if (proceed != true || !context.mounted) return;
+
+      final info = _packageInfo ??
+          await ref.read(updateServiceProvider).currentPackageInfo();
+      final path = await ref.read(backupServiceProvider).exportBackup(
+            appVersion: info.version,
+          );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -291,19 +419,59 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Не удалось сохранить: $e')),
+          SnackBar(content: Text(_backupErrorMessage(e, 'Не удалось сохранить'))),
         );
       }
     }
   }
 
-  Future<void> _import(BuildContext context, WidgetRef ref) async {
+  String _backupErrorMessage(Object error, String fallbackPrefix) {
+    if (error is BackupException) return error.message;
+    return '$fallbackPrefix: $error';
+  }
+
+  Future<void> _showImportOptions(BuildContext context, WidgetRef ref) async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.archive_outlined),
+              title: const Text('Полная копия (.zip)'),
+              subtitle: const Text('База, фото и настройки'),
+              onTap: () => Navigator.pop(context, 'zip'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.storage_outlined),
+              title: const Text('Старый формат (.db)'),
+              subtitle: const Text('Только база данных'),
+              onTap: () => Navigator.pop(context, 'db'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (choice == 'zip') {
+      await _importZip(context, ref);
+    } else if (choice == 'db') {
+      await _importLegacy(context, ref);
+    }
+  }
+
+  Future<void> _importZip(BuildContext context, WidgetRef ref) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Импорт данных'),
+        title: const Text('Восстановление'),
         content: const Text(
-          'Текущие данные будут заменены. Продолжить?',
+          'Текущие данные будут заменены содержимым резервной копии. '
+          'При ошибке восстановления ваши данные останутся без изменений.',
         ),
         actions: [
           TextButton(
@@ -312,32 +480,106 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Импорт'),
+            child: const Text('Восстановить'),
           ),
         ],
       ),
     );
-
     if (confirm != true) return;
 
     try {
-      final success =
-          await ref.read(backupServiceProvider).importDatabase();
-      invalidateAllData(ref);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success ? 'Данные восстановлены' : 'Импорт отменён'),
-          ),
-        );
-      }
+      final result =
+          await ref.read(backupServiceProvider).importBackupZip();
+      await _afterImport(context, ref, result, legacy: false);
     } catch (e) {
       invalidateAllData(ref);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Не удалось импортировать: $e')),
+          SnackBar(content: Text(_backupErrorMessage(e, 'Не удалось восстановить'))),
         );
+      }
+    }
+  }
+
+  Future<void> _importLegacy(BuildContext context, WidgetRef ref) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Старый формат'),
+        content: const Text(
+          'Обнаружен архив старого формата.\n'
+          'Фотографии и настройки не будут восстановлены.\n\n'
+          'Продолжить?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Продолжить'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    try {
+      final result =
+          await ref.read(backupServiceProvider).importLegacyDatabase();
+      await _afterImport(context, ref, result, legacy: true);
+    } catch (e) {
+      invalidateAllData(ref);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_backupErrorMessage(e, 'Не удалось импортировать'))),
+        );
+      }
+    }
+  }
+
+  Future<void> _afterImport(
+    BuildContext context,
+    WidgetRef ref,
+    BackupImportResult result, {
+    required bool legacy,
+  }) async {
+    if (result == BackupImportResult.cancelled) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Восстановление отменено')),
+        );
+      }
+      return;
+    }
+
+    invalidateAllData(ref);
+    ref.invalidate(securityProvider);
+    ref.read(themeModeProvider.notifier).state =
+        ref.read(settingsServiceProvider).themeMode;
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            legacy
+                ? 'База восстановлена (старый формат)'
+                : 'Данные полностью восстановлены',
+          ),
+        ),
+      );
+      if (!legacy && result == BackupImportResult.success) {
+        final pinOn = ref.read(settingsServiceProvider).pinEnabled;
+        if (pinOn) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Биометрическую аутентификацию необходимо настроить заново.',
+              ),
+            ),
+          );
+        }
       }
     }
   }

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:mycycle/shared/widgets/diary_image_preview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mycycle/core/providers/app_providers.dart';
@@ -109,11 +108,10 @@ class _ImageGrid extends StatelessWidget {
         children: images.map((img) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(img.imagePath),
+            child: DiaryImagePreview(
+              path: img.imagePath,
               width: 100,
               height: 100,
-              fit: BoxFit.cover,
             ),
           );
         }).toList(),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +7,7 @@ import 'package:mycycle/core/providers/app_providers.dart';
 import 'package:mycycle/core/utils/date_utils.dart';
 import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
 import 'package:mycycle/features/diary/domain/entities/diary_image.dart';
+import 'package:mycycle/shared/widgets/diary_image_preview.dart';
 
 /// Экран создания/редактирования записи дневника.
 class DiaryEditScreen extends ConsumerStatefulWidget {
@@ -168,11 +167,10 @@ class _DiaryEditScreenState extends ConsumerState<DiaryEditScreen> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(image.imagePath),
+            child: DiaryImagePreview(
+              path: image.imagePath,
               width: 100,
               height: 100,
-              fit: BoxFit.cover,
             ),
           ),
           Positioned(
@@ -199,11 +197,10 @@ class _DiaryEditScreenState extends ConsumerState<DiaryEditScreen> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(path),
+            child: DiaryImagePreview(
+              path: path,
               width: 100,
               height: 100,
-              fit: BoxFit.cover,
             ),
           ),
           Positioned(

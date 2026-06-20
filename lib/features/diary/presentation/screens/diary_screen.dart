@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import 'package:mycycle/core/utils/date_utils.dart';
 import 'package:mycycle/core/utils/emotional_timeline.dart';
 import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
 import 'package:mycycle/features/diary/domain/entities/diary_list_query.dart';
+import 'package:mycycle/shared/widgets/diary_image_preview.dart';
 import 'package:mycycle/shared/widgets/app_card.dart';
 
 enum _DateFilter { all, today, week, month, custom }
@@ -387,14 +387,11 @@ class _DiaryListTile extends ConsumerWidget {
                         children: images.take(3).map((img) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 6),
-                            child: ClipRRect(
+                            child: DiaryImagePreview(
+                              path: img.imagePath,
+                              width: 48,
+                              height: 48,
                               borderRadius: BorderRadius.circular(6),
-                              child: Image.file(
-                                File(img.imagePath),
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                              ),
                             ),
                           );
                         }).toList(),

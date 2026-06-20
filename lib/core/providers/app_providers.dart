@@ -7,6 +7,7 @@ import 'package:mycycle/core/security/security_controller.dart';
 import 'package:mycycle/core/services/backup_service.dart';
 import 'package:mycycle/core/services/biometric_service.dart';
 import 'package:mycycle/core/services/demo_data_seeder.dart';
+import 'package:mycycle/core/services/stress_test_seeder.dart';
 import 'package:mycycle/core/services/notification_service.dart';
 import 'package:mycycle/core/services/settings_service.dart';
 import 'package:mycycle/core/services/update_service.dart';
@@ -61,7 +62,11 @@ final notificationServiceProvider =
     Provider<NotificationService>((ref) => NotificationService());
 
 final backupServiceProvider = Provider<BackupService>((ref) {
-  return BackupService(ref.watch(appDatabaseProvider));
+  return BackupService(
+    db: ref.watch(appDatabaseProvider),
+    settings: ref.watch(settingsServiceProvider),
+    imageStorage: const DiaryImageStorage(),
+  );
 });
 
 final updateServiceProvider = Provider<UpdateService>((ref) => UpdateService());
@@ -159,6 +164,18 @@ final demoDataSeederProvider = Provider<DemoDataSeeder>((ref) {
     wishRepo: ref.watch(wishRepositoryProvider),
     importantDateRepo: ref.watch(importantDateRepositoryProvider),
     settings: ref.watch(settingsServiceProvider),
+  );
+});
+
+final stressTestSeederProvider = Provider<StressTestSeeder>((ref) {
+  return StressTestSeeder(
+    cycleRepo: ref.watch(cycleRepositoryProvider),
+    wellbeingRepo: ref.watch(wellbeingRepositoryProvider),
+    diaryRepo: ref.watch(diaryRepositoryProvider),
+    supportRepo: ref.watch(supportRepositoryProvider),
+    wishRepo: ref.watch(wishRepositoryProvider),
+    importantDateRepo: ref.watch(importantDateRepositoryProvider),
+    imageStorage: const DiaryImageStorage(),
   );
 });
 

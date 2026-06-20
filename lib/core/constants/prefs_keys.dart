@@ -2,6 +2,8 @@
 abstract final class PrefsKeys {
   static const String themeMode = 'theme_mode';
   static const String pinEnabled = 'pin_enabled';
+  static const String pinHash = 'pin_hash';
+  /// Устаревший ключ (plaintext); мигрируется в [pinHash] при проверке PIN.
   static const String pinCode = 'pin_code';
   static const String biometricEnabled = 'biometric_enabled';
   static const String defaultCycleLength = 'default_cycle_length';
@@ -13,4 +15,5 @@ abstract final class PrefsKeys {
   static const String reminderMinute = 'reminder_minute';
   static const String demoDataLoaded = 'demo_data_loaded';
   static const String userName = 'user_name';
+  static const String developerModeUnlocked = 'developer_mode_unlocked';
 }
