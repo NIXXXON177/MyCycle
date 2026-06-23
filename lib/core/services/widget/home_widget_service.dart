@@ -1,17 +1,17 @@
 import 'package:home_widget/home_widget.dart';
-import 'package:mycycle/core/constants/widget_keys.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/utils/cycle_calculator.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/core/utils/prediction_accuracy.dart';
-import 'package:mycycle/features/cycle/data/datasources/cycle_local_datasource.dart';
-import 'package:mycycle/features/cycle/data/repositories/cycle_repository.dart';
-import 'package:mycycle/features/important_dates/data/datasources/important_date_local_datasource.dart';
-import 'package:mycycle/features/important_dates/data/repositories/important_date_repository.dart';
-import 'package:mycycle/features/wellbeing/data/datasources/wellbeing_local_datasource.dart';
-import 'package:mycycle/features/wellbeing/data/repositories/wellbeing_repository.dart';
-import 'package:mycycle/core/services/settings_service.dart';
+import 'package:florea/core/constants/widget_keys.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/utils/cycle_calculator.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/core/utils/prediction_accuracy.dart';
+import 'package:florea/features/cycle/data/datasources/cycle_local_datasource.dart';
+import 'package:florea/features/cycle/data/repositories/cycle_repository.dart';
+import 'package:florea/features/important_dates/data/datasources/important_date_local_datasource.dart';
+import 'package:florea/features/important_dates/data/repositories/important_date_repository.dart';
+import 'package:florea/features/wellbeing/data/datasources/wellbeing_local_datasource.dart';
+import 'package:florea/features/wellbeing/data/repositories/wellbeing_repository.dart';
+import 'package:florea/core/services/settings_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Обновляет данные Android-виджета из приложения.
@@ -28,8 +28,8 @@ class HomeWidgetService {
   final WellbeingRepository _wellbeingRepo;
   final ImportantDateRepository _importantDateRepo;
 
-  static const _smallProvider = 'MyCycleWidgetSmallProvider';
-  static const _largeProvider = 'MyCycleWidgetLargeProvider';
+  static const _smallProvider = 'FloreaWidgetSmallProvider';
+  static const _largeProvider = 'FloreaWidgetLargeProvider';
 
   /// Синхронизация без Riverpod (для фонового callback).
   static Future<void> syncStandalone() async {

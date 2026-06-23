@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/services/settings_service.dart';
+import 'package:florea/core/services/settings_service.dart';
 
 /// Состояние блокировки приложения (PIN / биометрия).
 class SecurityState {

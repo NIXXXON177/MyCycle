@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран истории и редактирования циклов.
 class CycleHistoryScreen extends ConsumerStatefulWidget {

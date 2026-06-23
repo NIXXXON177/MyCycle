@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mycycle/core/backup/backup_manifest.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/router/app_router.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
-import 'package:mycycle/shared/widgets/update_checker.dart';
+import 'package:florea/core/backup/backup_manifest.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/router/app_router.dart';
+import 'package:florea/shared/widgets/app_card.dart';
+import 'package:florea/shared/widgets/update_checker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 /// Экран настроек приложения.
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -53,27 +53,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           const SectionTitle('Тема'),
           AppCard(
-            child: Column(
-              children: [
-                RadioListTile<ThemeMode>(
-                  title: const Text('Светлая'),
-                  value: ThemeMode.light,
-                  groupValue: themeMode,
-                  onChanged: (v) => _setTheme(ref, v!),
-                ),
-                RadioListTile<ThemeMode>(
-                  title: const Text('Тёмная'),
-                  value: ThemeMode.dark,
-                  groupValue: themeMode,
-                  onChanged: (v) => _setTheme(ref, v!),
-                ),
-                RadioListTile<ThemeMode>(
-                  title: const Text('Системная'),
-                  value: ThemeMode.system,
-                  groupValue: themeMode,
-                  onChanged: (v) => _setTheme(ref, v!),
-                ),
-              ],
+            child: RadioGroup<ThemeMode>(
+              groupValue: themeMode,
+              onChanged: (v) => _setTheme(ref, v!),
+              child: const Column(
+                children: [
+                  RadioListTile<ThemeMode>(
+                    title: Text('Светлая'),
+                    value: ThemeMode.light,
+                  ),
+                  RadioListTile<ThemeMode>(
+                    title: Text('Тёмная'),
+                    value: ThemeMode.dark,
+                  ),
+                  RadioListTile<ThemeMode>(
+                    title: Text('Системная'),
+                    value: ThemeMode.system,
+                  ),
+                ],
+              ),
             ),
           ),
           const SectionTitle('Безопасность'),
@@ -353,13 +351,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       await ref.read(stressTestSeederProvider).generate();
       invalidateAllData(ref);
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Тестовые данные добавлены')),
         );
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Ошибка: $e')),
         );
@@ -457,6 +455,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
 
+    if (!context.mounted) return;
     if (choice == 'zip') {
       await _importZip(context, ref);
     } else if (choice == 'db') {
@@ -490,6 +489,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       final result =
           await ref.read(backupServiceProvider).importBackupZip();
+      if (!context.mounted) return;
       await _afterImport(context, ref, result, legacy: false);
     } catch (e) {
       invalidateAllData(ref);
@@ -528,6 +528,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       final result =
           await ref.read(backupServiceProvider).importLegacyDatabase();
+      if (!context.mounted) return;
       await _afterImport(context, ref, result, legacy: true);
     } catch (e) {
       invalidateAllData(ref);

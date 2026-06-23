@@ -1,7 +1,7 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/features/support/data/models/support_event_model.dart';
-import 'package:mycycle/features/support/domain/entities/support_event.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/features/support/data/models/support_event_model.dart';
+import 'package:florea/features/support/domain/entities/support_event.dart';
 
 class SupportLocalDataSource {
   SupportLocalDataSource(this._db);

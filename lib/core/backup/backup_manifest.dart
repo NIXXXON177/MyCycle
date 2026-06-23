@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:mycycle/core/backup/backup_constants.dart';
-import 'package:mycycle/core/database/database_schema.dart';
+import 'package:florea/core/backup/backup_constants.dart';
+import 'package:florea/core/database/database_schema.dart';
 
 /// Метаданные резервной копии (manifest.json).
 class BackupManifest {
@@ -53,9 +53,9 @@ class BackupManifest {
       );
     }
     if (databaseVersion > DatabaseSchema.version) {
-      throw BackupException(
+      throw const BackupException(
         'Резервная копия создана в более новой версии приложения. '
-        'Обновите MyCycle перед восстановлением.',
+        'Обновите Florea перед восстановлением.',
       );
     }
   }

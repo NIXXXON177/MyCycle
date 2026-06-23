@@ -1,6 +1,6 @@
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_image.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/diary/domain/entities/diary_entry.dart';
+import 'package:florea/features/diary/domain/entities/diary_image.dart';
 
 /// Параметры фильтрации списка дневника.
 class DiaryListQuery {

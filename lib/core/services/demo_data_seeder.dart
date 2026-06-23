@@ -1,19 +1,19 @@
-import 'package:mycycle/core/enums/energy_level.dart';
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/enums/pain_level.dart';
-import 'package:mycycle/core/enums/pain_location.dart';
-import 'package:mycycle/core/enums/pms_symptom.dart';
-import 'package:mycycle/core/enums/support_event_type.dart';
-import 'package:mycycle/core/enums/wish_priority.dart';
-import 'package:mycycle/core/services/settings_service.dart';
-import 'package:mycycle/features/cycle/data/repositories/cycle_repository.dart';
-import 'package:mycycle/features/diary/data/repositories/diary_repository.dart';
-import 'package:mycycle/features/important_dates/data/repositories/important_date_repository.dart';
-import 'package:mycycle/features/support/data/repositories/support_repository.dart';
-import 'package:mycycle/features/support/domain/entities/support_event.dart';
-import 'package:mycycle/features/wellbeing/data/repositories/wellbeing_repository.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
-import 'package:mycycle/features/wishes/data/repositories/wish_repository.dart';
+import 'package:florea/core/enums/energy_level.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/enums/pain_level.dart';
+import 'package:florea/core/enums/pain_location.dart';
+import 'package:florea/core/enums/pms_symptom.dart';
+import 'package:florea/core/enums/support_event_type.dart';
+import 'package:florea/core/enums/wish_priority.dart';
+import 'package:florea/core/services/settings_service.dart';
+import 'package:florea/features/cycle/data/repositories/cycle_repository.dart';
+import 'package:florea/features/diary/data/repositories/diary_repository.dart';
+import 'package:florea/features/important_dates/data/repositories/important_date_repository.dart';
+import 'package:florea/features/support/data/repositories/support_repository.dart';
+import 'package:florea/features/support/domain/entities/support_event.dart';
+import 'package:florea/features/wellbeing/data/repositories/wellbeing_repository.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/features/wishes/data/repositories/wish_repository.dart';
 import 'package:uuid/uuid.dart';
 
 /// Загрузчик демонстрационных данных для тестирования.

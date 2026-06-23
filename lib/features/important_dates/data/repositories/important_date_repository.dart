@@ -1,6 +1,6 @@
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/important_dates/data/datasources/important_date_local_datasource.dart';
-import 'package:mycycle/features/important_dates/domain/entities/important_date.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/important_dates/data/datasources/important_date_local_datasource.dart';
+import 'package:florea/features/important_dates/domain/entities/important_date.dart';
 import 'package:uuid/uuid.dart';
 
 class ImportantDateRepository {

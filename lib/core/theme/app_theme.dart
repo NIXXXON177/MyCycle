@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
+import 'package:florea/core/constants/app_colors.dart';
 
 /// Material 3 тема приложения с пастельной палитрой.
 abstract final class AppTheme {

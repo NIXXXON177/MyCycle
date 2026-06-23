@@ -1,5 +1,5 @@
-import 'package:mycycle/core/enums/support_event_type.dart';
-import 'package:mycycle/features/support/domain/entities/support_event.dart';
+import 'package:florea/core/enums/support_event_type.dart';
+import 'package:florea/features/support/domain/entities/support_event.dart';
 
 abstract final class SupportEventModel {
   static SupportEvent fromMap(Map<String, dynamic> map) {

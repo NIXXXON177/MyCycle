@@ -1,3 +1,3 @@
-import 'package:mycycle/app_bootstrap.dart';
+import 'package:florea/app_bootstrap.dart';
 
 void main() => bootstrapApp();

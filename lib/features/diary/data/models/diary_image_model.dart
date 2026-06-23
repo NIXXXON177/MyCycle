@@ -1,4 +1,4 @@
-import 'package:mycycle/features/diary/domain/entities/diary_image.dart';
+import 'package:florea/features/diary/domain/entities/diary_image.dart';
 
 abstract final class DiaryImageModel {
   static DiaryImage fromMap(Map<String, dynamic> map) {

@@ -1,7 +1,7 @@
-import 'package:mycycle/core/utils/cycle_calculator.dart';
-import 'package:mycycle/features/cycle/data/datasources/cycle_local_datasource.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/core/utils/cycle_calculator.dart';
+import 'package:florea/features/cycle/data/datasources/cycle_local_datasource.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
 import 'package:uuid/uuid.dart';
 
 class CycleRepository {

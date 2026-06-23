@@ -1,6 +1,6 @@
-import 'package:mycycle/core/enums/support_event_type.dart';
-import 'package:mycycle/features/support/data/datasources/support_local_datasource.dart';
-import 'package:mycycle/features/support/domain/entities/support_event.dart';
+import 'package:florea/core/enums/support_event_type.dart';
+import 'package:florea/features/support/data/datasources/support_local_datasource.dart';
+import 'package:florea/features/support/domain/entities/support_event.dart';
 import 'package:uuid/uuid.dart';
 
 class SupportRepository {

@@ -1,12 +1,12 @@
-import 'package:mycycle/core/enums/cycle_phase.dart';
-import 'package:mycycle/core/enums/energy_level.dart';
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/enums/pain_level.dart';
-import 'package:mycycle/core/enums/pms_symptom.dart';
-import 'package:mycycle/core/utils/cycle_calculator.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/core/enums/cycle_phase.dart';
+import 'package:florea/core/enums/energy_level.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/enums/pain_level.dart';
+import 'package:florea/core/enums/pms_symptom.dart';
+import 'package:florea/core/utils/cycle_calculator.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
 
 /// Период для графика индекса.
 enum IndexChartPeriod {

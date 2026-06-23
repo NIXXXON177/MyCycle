@@ -1,7 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mycycle/core/security/security_controller.dart';
-import 'package:mycycle/core/services/settings_service.dart';
+import 'package:florea/core/security/security_controller.dart';
+import 'package:florea/core/services/settings_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/theme/app_theme.dart';
-import 'package:mycycle/shared/widgets/app_lock_observer.dart';
-import 'package:mycycle/shared/widgets/update_checker.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/theme/app_theme.dart';
+import 'package:florea/shared/widgets/app_lock_observer.dart';
+import 'package:florea/shared/widgets/update_checker.dart';
 
-/// Корневой виджет приложения MyCycle.
-class MyCycleApp extends ConsumerWidget {
-  const MyCycleApp({super.key});
+/// Корневой виджет приложения Florea.
+class FloreaApp extends ConsumerWidget {
+  const FloreaApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class MyCycleApp extends ConsumerWidget {
     final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
-      title: 'MyCycle',
+      title: 'Florea',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

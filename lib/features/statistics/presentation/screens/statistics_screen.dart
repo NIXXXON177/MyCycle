@@ -1,14 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/utils/intimacy_analyzer.dart';
-import 'package:mycycle/core/utils/cycle_calculator.dart';
-import 'package:mycycle/core/utils/wellbeing_index.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/utils/intimacy_analyzer.dart';
+import 'package:florea/core/utils/cycle_calculator.dart';
+import 'package:florea/core/utils/wellbeing_index.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран статистики и аналитики.
 class StatisticsScreen extends ConsumerWidget {

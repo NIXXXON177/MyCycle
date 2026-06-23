@@ -61,12 +61,12 @@ jobs:
 
       - name: Prepare release files
         run: |
-          cp build/app/outputs/flutter-apk/app-release.apk MyCycle.apk
+          cp build/app/outputs/flutter-apk/app-release.apk Florea.apk
           TAG="v${{ steps.version.outputs.name }}.${{ github.run_number }}"
           jq -n \
             --argjson versionCode ${{ github.run_number }} \
             --arg versionName "${{ steps.version.outputs.name }}" \
-            --arg apkUrl "https://github.com/${{ github.repository }}/releases/download/${TAG}/MyCycle.apk" \
+            --arg apkUrl "https://github.com/${{ github.repository }}/releases/download/${TAG}/Florea.apk" \
             --rawfile notes release_notes/whats_new.txt \
             '{versionCode: $versionCode, versionName: $versionName, apkUrl: $apkUrl, notes: $notes}' \
             > manifest.json
@@ -76,16 +76,17 @@ jobs:
             cat release_notes/whats_new.txt
             echo ""
             echo "---"
-            echo "Установите MyCycle.apk поверх текущей версии — все данные сохранятся."
+            echo "Установите Florea.apk поверх текущей версии Florea — данные сохранятся."
+            echo "Старую MyCycle замените установкой Florea и Restore из Backup v2."
           } > release_body.md
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ steps.version.outputs.name }}.${{ github.run_number }}
-          name: MyCycle ${{ steps.version.outputs.name }} (build ${{ github.run_number }})
+          name: Florea ${{ steps.version.outputs.name }} (build ${{ github.run_number }})
           body_path: release_body.md
           files: |
-            MyCycle.apk
+            Florea.apk
             manifest.json
           make_latest: true

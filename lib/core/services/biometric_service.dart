@@ -22,7 +22,7 @@ class BiometricService {
       if (!await isAvailable()) return false;
 
       return await _auth.authenticate(
-        localizedReason: 'Подтвердите вход в MyCycle',
+        localizedReason: 'Подтвердите вход в Florea',
         options: const AuthenticationOptions(
           biometricOnly: true,
           stickyAuth: true,

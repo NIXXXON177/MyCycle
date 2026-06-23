@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mycycle.mycycle"
+    namespace = "com.florea.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.mycycle.mycycle"
+        applicationId = "com.florea.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

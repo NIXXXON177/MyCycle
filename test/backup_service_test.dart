@@ -4,15 +4,15 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mycycle/core/backup/backup_constants.dart';
-import 'package:mycycle/core/backup/backup_manifest.dart';
-import 'package:mycycle/core/backup/backup_settings_snapshot.dart';
-import 'package:mycycle/core/security/pin_hasher.dart';
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/core/services/backup_service.dart';
-import 'package:mycycle/core/services/diary_image_storage.dart';
-import 'package:mycycle/core/services/settings_service.dart';
+import 'package:florea/core/backup/backup_constants.dart';
+import 'package:florea/core/backup/backup_manifest.dart';
+import 'package:florea/core/backup/backup_settings_snapshot.dart';
+import 'package:florea/core/security/pin_hasher.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/core/services/backup_service.dart';
+import 'package:florea/core/services/diary_image_storage.dart';
+import 'package:florea/core/services/settings_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -135,7 +135,7 @@ void main() {
           rebuilt.addFile(file);
         }
       }
-      final legacyZip = ZipEncoder().encode(rebuilt)!;
+      final legacyZip = ZipEncoder().encode(rebuilt);
 
       await settings.removePin();
       await backupService.restoreBackupArchive(legacyZip);
@@ -211,7 +211,7 @@ void main() {
           rebuilt.addFile(file);
         }
       }
-      final brokenZip = ZipEncoder().encode(rebuilt)!;
+      final brokenZip = ZipEncoder().encode(rebuilt);
 
       expect(
         () => backupService.restoreBackupArchive(brokenZip),

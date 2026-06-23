@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/core/utils/partner_advisor.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
-import 'package:mycycle/features/important_dates/domain/entities/important_date.dart';
-import 'package:mycycle/features/support/domain/entities/support_event.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
-import 'package:mycycle/features/wishes/domain/entities/wish.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/core/utils/partner_advisor.dart';
+import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/features/important_dates/domain/entities/important_date.dart';
+import 'package:florea/features/support/domain/entities/support_event.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/features/wishes/domain/entities/wish.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Режим для партнёра 2.0 — советы, поддержка, хотелки и важные даты.
 class PartnerScreen extends ConsumerStatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:mycycle/core/enums/cycle_phase.dart';
+import 'package:florea/core/enums/cycle_phase.dart';
 
 /// Прогноз и текущее состояние цикла.
 class CyclePrediction {

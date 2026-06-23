@@ -1,7 +1,7 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/features/wishes/data/models/wish_model.dart';
-import 'package:mycycle/features/wishes/domain/entities/wish.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/features/wishes/data/models/wish_model.dart';
+import 'package:florea/features/wishes/domain/entities/wish.dart';
 
 class WishLocalDataSource {
   WishLocalDataSource(this._db);

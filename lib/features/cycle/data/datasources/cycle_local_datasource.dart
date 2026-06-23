@@ -1,7 +1,7 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/features/cycle/data/models/cycle_model.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/features/cycle/data/models/cycle_model.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
 
 /// Источник данных циклов (SQLite).
 class CycleLocalDataSource {

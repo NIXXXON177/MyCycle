@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Пастельная цветовая палитра приложения MyCycle.
+/// Пастельная цветовая палитра приложения Florea.
 abstract final class AppColors {
   static const Color pink = Color(0xFFF8BBD9);
   static const Color pinkDark = Color(0xFFE91E8C);

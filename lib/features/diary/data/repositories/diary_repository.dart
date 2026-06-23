@@ -1,10 +1,10 @@
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/services/diary_image_storage.dart';
-import 'package:mycycle/features/diary/data/datasources/diary_image_local_datasource.dart';
-import 'package:mycycle/features/diary/data/datasources/diary_local_datasource.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_image.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_list_query.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/services/diary_image_storage.dart';
+import 'package:florea/features/diary/data/datasources/diary_image_local_datasource.dart';
+import 'package:florea/features/diary/data/datasources/diary_local_datasource.dart';
+import 'package:florea/features/diary/domain/entities/diary_entry.dart';
+import 'package:florea/features/diary/domain/entities/diary_image.dart';
+import 'package:florea/features/diary/domain/entities/diary_list_query.dart';
 import 'package:uuid/uuid.dart';
 
 class DiaryRepository {

@@ -1,4 +1,4 @@
-import 'package:mycycle/core/enums/support_event_type.dart';
+import 'package:florea/core/enums/support_event_type.dart';
 
 /// Событие нажатия кнопки поддержки.
 class SupportEvent {

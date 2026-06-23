@@ -1,4 +1,4 @@
-package com.mycycle.mycycle
+package com.florea.app
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -9,7 +9,7 @@ import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-class MyCycleWidgetLargeProvider : HomeWidgetProvider() {
+class FloreaWidgetLargeProvider : HomeWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -66,21 +66,21 @@ class MyCycleWidgetLargeProvider : HomeWidgetProvider() {
                 R.id.mood_good,
                 HomeWidgetBackgroundIntent.getBroadcast(
                     context,
-                    Uri.parse("mycycle://mood/good"),
+                    Uri.parse("florea://mood/good"),
                 ),
             )
             views.setOnClickPendingIntent(
                 R.id.mood_normal,
                 HomeWidgetBackgroundIntent.getBroadcast(
                     context,
-                    Uri.parse("mycycle://mood/normal"),
+                    Uri.parse("florea://mood/normal"),
                 ),
             )
             views.setOnClickPendingIntent(
                 R.id.mood_bad,
                 HomeWidgetBackgroundIntent.getBroadcast(
                     context,
-                    Uri.parse("mycycle://mood/bad"),
+                    Uri.parse("florea://mood/bad"),
                 ),
             )
         }

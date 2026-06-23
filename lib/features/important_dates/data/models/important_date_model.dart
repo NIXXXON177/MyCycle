@@ -1,5 +1,5 @@
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/important_dates/domain/entities/important_date.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/important_dates/domain/entities/important_date.dart';
 
 abstract final class ImportantDateModel {
   static ImportantDate fromMap(Map<String, dynamic> map) {

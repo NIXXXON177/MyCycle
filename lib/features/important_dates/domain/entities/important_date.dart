@@ -1,4 +1,4 @@
-import 'package:mycycle/core/utils/date_utils.dart';
+import 'package:florea/core/utils/date_utils.dart';
 
 /// Важная дата (годовщина, день рождения и т.д.).
 class ImportantDate {

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:mycycle/core/backup/backup_manifest.dart';
+import 'package:florea/core/backup/backup_manifest.dart';
 
 /// Распознавание ошибок нехватки места при операциях с резервной копией.
 abstract final class BackupStorageErrors {

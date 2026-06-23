@@ -1,6 +1,6 @@
-import 'package:mycycle/core/constants/db_tables.dart';
+import 'package:florea/core/constants/db_tables.dart';
 
-/// SQL-схема базы данных MyCycle.
+/// SQL-схема базы данных Florea.
 abstract final class DatabaseSchema {
   static const int version = 5;
 

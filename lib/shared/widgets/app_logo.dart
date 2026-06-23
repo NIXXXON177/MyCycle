@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
+import 'package:florea/core/constants/app_colors.dart';
 
-/// Логотип MyCycle — цикл с маркером дня.
+/// Логотип Florea — цикл с маркером дня.
 class AppLogo extends StatelessWidget {
   const AppLogo({
     super.key,

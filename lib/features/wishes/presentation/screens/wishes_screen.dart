@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/enums/wish_priority.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/features/wishes/domain/entities/wish.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/enums/wish_priority.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/features/wishes/domain/entities/wish.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран списка желаний «Мои хотелки».
 class WishesScreen extends ConsumerWidget {
@@ -112,7 +112,7 @@ class WishesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<WishPriority>(
-                  value: priority,
+                  initialValue: priority,
                   decoration: const InputDecoration(labelText: 'Приоритет'),
                   items: WishPriority.values
                       .map((p) => DropdownMenuItem(

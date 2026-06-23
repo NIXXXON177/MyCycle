@@ -1,4 +1,4 @@
-import 'package:mycycle/core/utils/date_utils.dart';
+import 'package:florea/core/utils/date_utils.dart';
 
 /// Сущность менструального цикла.
 class Cycle {

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
+import 'package:florea/core/constants/app_colors.dart';
 
 /// Заглушка для отсутствующего или повреждённого фото.
 class MissingImagePlaceholder extends StatelessWidget {

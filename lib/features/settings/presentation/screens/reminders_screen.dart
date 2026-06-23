@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/services/settings_service.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/services/settings_service.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран настройки локальных напоминаний.
 class RemindersScreen extends ConsumerStatefulWidget {

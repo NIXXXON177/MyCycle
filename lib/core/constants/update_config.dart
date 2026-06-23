@@ -1,4 +1,8 @@
 /// Настройки автообновления через GitHub Releases.
+///
+/// [githubRepo] — это репозиторий-хостинг релизов (исходники приложения Florea
+/// исторически лежат в репо `MyCycle`). Если переименуешь репозиторий на GitHub —
+/// поменяй здесь значение, иначе автообновление перестанет находить релизы.
 abstract final class UpdateConfig {
   static const githubOwner = 'NIXXXON177';
   static const githubRepo = 'MyCycle';

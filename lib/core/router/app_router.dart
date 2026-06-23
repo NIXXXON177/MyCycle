@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/security/security_controller.dart';
-import 'package:mycycle/features/auth/presentation/screens/pin_screen.dart';
-import 'package:mycycle/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:mycycle/features/cycle/presentation/screens/cycle_history_screen.dart';
-import 'package:mycycle/features/cycle/presentation/screens/home_screen.dart';
-import 'package:mycycle/features/diary/presentation/screens/diary_edit_screen.dart';
-import 'package:mycycle/features/diary/presentation/screens/diary_screen.dart';
-import 'package:mycycle/features/diary/presentation/screens/memories_screen.dart';
-import 'package:mycycle/features/partner/presentation/screens/partner_screen.dart';
-import 'package:mycycle/features/patterns/presentation/screens/patterns_screen.dart';
-import 'package:mycycle/features/settings/presentation/screens/reminders_screen.dart';
-import 'package:mycycle/features/settings/presentation/screens/settings_screen.dart';
-import 'package:mycycle/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:mycycle/features/support/presentation/screens/support_screen.dart';
-import 'package:mycycle/features/wellbeing/presentation/screens/wellbeing_screen.dart';
-import 'package:mycycle/features/wishes/presentation/screens/wishes_screen.dart';
-import 'package:mycycle/shared/widgets/main_shell.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/security/security_controller.dart';
+import 'package:florea/features/auth/presentation/screens/pin_screen.dart';
+import 'package:florea/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:florea/features/cycle/presentation/screens/cycle_history_screen.dart';
+import 'package:florea/features/cycle/presentation/screens/home_screen.dart';
+import 'package:florea/features/diary/presentation/screens/diary_edit_screen.dart';
+import 'package:florea/features/diary/presentation/screens/diary_screen.dart';
+import 'package:florea/features/diary/presentation/screens/memories_screen.dart';
+import 'package:florea/features/partner/presentation/screens/partner_screen.dart';
+import 'package:florea/features/patterns/presentation/screens/patterns_screen.dart';
+import 'package:florea/features/settings/presentation/screens/reminders_screen.dart';
+import 'package:florea/features/settings/presentation/screens/settings_screen.dart';
+import 'package:florea/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:florea/features/support/presentation/screens/support_screen.dart';
+import 'package:florea/features/wellbeing/presentation/screens/wellbeing_screen.dart';
+import 'package:florea/features/wishes/presentation/screens/wishes_screen.dart';
+import 'package:florea/shared/widgets/main_shell.dart';
 
 /// Маршруты приложения.
 abstract final class AppRoutes {

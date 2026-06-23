@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/enums/energy_level.dart';
-import 'package:mycycle/core/enums/intimacy_type.dart';
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/enums/pain_level.dart';
-import 'package:mycycle/core/enums/pain_location.dart';
-import 'package:mycycle/core/enums/pms_symptom.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/enums/energy_level.dart';
+import 'package:florea/core/enums/intimacy_type.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/enums/pain_level.dart';
+import 'package:florea/core/enums/pain_location.dart';
+import 'package:florea/core/enums/pms_symptom.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран отметки ежедневного самочувствия.
 class WellbeingScreen extends ConsumerStatefulWidget {

@@ -1,7 +1,7 @@
-import 'package:mycycle/core/enums/cycle_phase.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/core/enums/cycle_phase.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
 
 /// Сервис расчёта менструального цикла.
 ///

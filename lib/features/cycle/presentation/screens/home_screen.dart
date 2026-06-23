@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/router/app_router.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/utils/prediction_accuracy.dart';
-import 'package:mycycle/core/utils/wellbeing_index.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/router/app_router.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/utils/prediction_accuracy.dart';
+import 'package:florea/core/utils/wellbeing_index.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Главный экран с обзором цикла.
 class HomeScreen extends ConsumerWidget {
@@ -23,7 +23,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MyCycle'),
+        title: const Text('Florea'),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_horiz),

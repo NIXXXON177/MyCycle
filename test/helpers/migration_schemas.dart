@@ -1,5 +1,5 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/database_schema.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/database_schema.dart';
 
 /// Исторические схемы БД для тестов миграций.
 abstract final class MigrationSchemas {

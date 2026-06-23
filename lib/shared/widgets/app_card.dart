@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
+import 'package:florea/core/constants/app_colors.dart';
 
 /// Скруглённая карточка с мягкой тенью.
 class AppCard extends StatelessWidget {
@@ -87,7 +87,7 @@ class ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: AppColors.pinkDark),
+            const Icon(Icons.error_outline, size: 48, color: AppColors.pinkDark),
             const SizedBox(height: 12),
             Text(message, textAlign: TextAlign.center),
             if (onRetry != null) ...[

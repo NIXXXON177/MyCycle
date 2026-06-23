@@ -1,9 +1,9 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/diary/data/models/diary_model.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_list_query.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/diary/data/models/diary_model.dart';
+import 'package:florea/features/diary/domain/entities/diary_entry.dart';
+import 'package:florea/features/diary/domain/entities/diary_list_query.dart';
 
 class DiaryLocalDataSource {
   DiaryLocalDataSource(this._db);

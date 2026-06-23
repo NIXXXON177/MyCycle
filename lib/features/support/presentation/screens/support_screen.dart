@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/enums/support_event_type.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/enums/support_event_type.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран кнопок поддержки.
 class SupportScreen extends ConsumerWidget {

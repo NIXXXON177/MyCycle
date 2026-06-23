@@ -5,22 +5,22 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:mycycle/core/backup/backup_export_preview.dart';
-import 'package:mycycle/core/backup/backup_constants.dart';
-import 'package:mycycle/core/backup/backup_storage_errors.dart';
-import 'package:mycycle/core/backup/backup_device_platform.dart';
-import 'package:mycycle/core/backup/backup_manifest.dart';
-import 'package:mycycle/core/backup/backup_settings_snapshot.dart';
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/core/database/database_schema.dart';
-import 'package:mycycle/core/services/diary_image_storage.dart';
-import 'package:mycycle/core/services/settings_service.dart';
-import 'package:mycycle/features/diary/data/datasources/diary_image_local_datasource.dart';
+import 'package:florea/core/backup/backup_export_preview.dart';
+import 'package:florea/core/backup/backup_constants.dart';
+import 'package:florea/core/backup/backup_storage_errors.dart';
+import 'package:florea/core/backup/backup_device_platform.dart';
+import 'package:florea/core/backup/backup_manifest.dart';
+import 'package:florea/core/backup/backup_settings_snapshot.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/core/database/database_schema.dart';
+import 'package:florea/core/services/diary_image_storage.dart';
+import 'package:florea/core/services/settings_service.dart';
+import 'package:florea/features/diary/data/datasources/diary_image_local_datasource.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
-/// Экспорт и безопасное восстановление данных MyCycle (Backup v2).
+/// Экспорт и безопасное восстановление данных Florea (Backup v2).
 class BackupService {
   BackupService({
     required AppDatabase db,
@@ -133,11 +133,7 @@ class BackupService {
         ),
       );
 
-      final encoded = ZipEncoder().encode(archive);
-      if (encoded == null) {
-        throw const BackupException('Не удалось создать архив резервной копии');
-      }
-      return encoded;
+      return ZipEncoder().encode(archive);
     } catch (e) {
       BackupStorageErrors.rethrowIfInsufficientSpace(
         e,
@@ -189,7 +185,7 @@ class BackupService {
     try {
       final zipBytes = await buildBackupArchive(appVersion: appVersion);
       final dateLabel = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final fileName = 'MyCycle_Backup_$dateLabel.zip';
+      final fileName = 'Florea_Backup_$dateLabel.zip';
 
       return FilePicker.platform.saveFile(
         dialogTitle: 'Сохранить резервную копию',
@@ -270,7 +266,7 @@ class BackupService {
 
     final pickedFile = File(pickedPath);
     if (!await _isSqliteFile(pickedFile)) {
-      throw const BackupException('Файл не является базой данных MyCycle');
+      throw const BackupException('Файл не является базой данных Florea');
     }
 
     final rollbackDir = await _createTempDir('mycycle_legacy_rollback_');

@@ -1,4 +1,4 @@
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
 
 /// Уровень точности прогноза цикла.
 enum PredictionAccuracyLevel {

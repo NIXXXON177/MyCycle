@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/utils/wellbeing_index.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/utils/wellbeing_index.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Экран автоматических закономерностей.
 class PatternsScreen extends ConsumerWidget {

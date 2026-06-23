@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
+import 'package:florea/core/providers/app_providers.dart';
 
 /// Блокирует приложение при уходе в фон, если включён PIN.
 class AppLockObserver extends ConsumerStatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/shared/widgets/app_logo.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/shared/widgets/app_logo.dart';
 
 /// Анимированный экран загрузки при старте приложения.
 class SplashScreen extends StatefulWidget {
@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
                   colors: [AppColors.pinkDark, AppColors.purpleDark],
                 ).createShader(bounds),
                 child: const Text(
-                  'MyCycle',
+                  'Florea',
                   style: TextStyle(
                     fontSize: 34,
                     fontWeight: FontWeight.w700,

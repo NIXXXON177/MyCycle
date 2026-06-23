@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/constants/prefs_keys.dart';
-import 'package:mycycle/core/security/pin_hasher.dart';
+import 'package:florea/core/constants/prefs_keys.dart';
+import 'package:florea/core/security/pin_hasher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Модель настроек напоминаний.

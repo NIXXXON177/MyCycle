@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/router/app_router.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/core/utils/emotional_timeline.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_list_query.dart';
-import 'package:mycycle/shared/widgets/diary_image_preview.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/router/app_router.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/core/utils/emotional_timeline.dart';
+import 'package:florea/features/diary/domain/entities/diary_entry.dart';
+import 'package:florea/features/diary/domain/entities/diary_list_query.dart';
+import 'package:florea/shared/widgets/diary_image_preview.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 enum _DateFilter { all, today, week, month, custom }
 

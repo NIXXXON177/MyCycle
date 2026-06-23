@@ -1,4 +1,4 @@
-import 'package:mycycle/core/enums/wish_priority.dart';
+import 'package:florea/core/enums/wish_priority.dart';
 
 /// Запись в списке желаний.
 class Wish {

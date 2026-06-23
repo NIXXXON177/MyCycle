@@ -1,4 +1,4 @@
-package com.mycycle.mycycle
+package com.florea.app
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -9,7 +9,7 @@ import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-class MyCycleWidgetSmallProvider : HomeWidgetProvider() {
+class FloreaWidgetSmallProvider : HomeWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,

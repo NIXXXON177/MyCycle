@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/enums/intimacy_type.dart';
-import 'package:mycycle/core/enums/pain_level.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/router/app_router.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/data/repositories/cycle_repository.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/enums/intimacy_type.dart';
+import 'package:florea/core/enums/pain_level.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/router/app_router.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/data/repositories/cycle_repository.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Календарь цикла с цветовой маркировкой дней.
@@ -120,13 +120,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16),
+        const Padding(
+          padding: EdgeInsets.all(16),
           child: Wrap(
             spacing: 16,
             runSpacing: 8,
             alignment: WrapAlignment.center,
-            children: const [
+            children: [
               _LegendItem(color: AppColors.period, label: '🔴 Месячные'),
               _LegendItem(color: AppColors.ovulation, label: '🟣 Овуляция'),
               _LegendItem(color: AppColors.fertile, label: '🟢 Фертильное'),
@@ -379,7 +379,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   ) async {
     await ref.read(cycleRepositoryProvider).addCycle(startDate: day);
     await _afterCycleChange();
-    if (!mounted) return;
+    if (!mounted || !sheetContext.mounted) return;
     Navigator.pop(sheetContext);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -399,7 +399,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         .read(cycleRepositoryProvider)
         .updateCycle(cycle.copyWith(endDate: day));
     await _afterCycleChange();
-    if (!mounted) return;
+    if (!mounted || !sheetContext.mounted) return;
     Navigator.pop(sheetContext);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -439,7 +439,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         .setIntimacyForDate(date, intimacy);
     invalidateAllData(ref);
     ref.invalidate(wellbeingByDateProvider(date));
-    if (mounted) {
+    if (mounted && sheetContext.mounted) {
       Navigator.pop(sheetContext);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -1,4 +1,4 @@
-/// Константы формата резервной копии MyCycle Backup v2.
+/// Константы формата резервной копии Florea Backup v2.
 abstract final class BackupConstants {
   static const int backupVersion = 2;
 

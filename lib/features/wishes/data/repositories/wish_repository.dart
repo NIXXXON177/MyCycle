@@ -1,6 +1,6 @@
-import 'package:mycycle/core/enums/wish_priority.dart';
-import 'package:mycycle/features/wishes/data/datasources/wish_local_datasource.dart';
-import 'package:mycycle/features/wishes/domain/entities/wish.dart';
+import 'package:florea/core/enums/wish_priority.dart';
+import 'package:florea/features/wishes/data/datasources/wish_local_datasource.dart';
+import 'package:florea/features/wishes/domain/entities/wish.dart';
 import 'package:uuid/uuid.dart';
 
 class WishRepository {

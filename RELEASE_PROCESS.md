@@ -27,6 +27,33 @@ git tag 1.7.5-rc1
 flutter build apk --release
 ```
 
+### Артефакт для валидации (заполнить после сборки)
+
+Убедиться, что на устройстве тестируется APK **именно из RC-коммита**:
+
+```
+Коммит:    d1ad434 (release/1.7.5-rc1, tag 1.7.5-rc1)
+Версия:    1.7.5+1 (pubspec.yaml)
+Сборка:    YYYY-MM-DD HH:MM
+Файл:      build/app/outputs/flutter-apk/app-release.apk
+Размер:    ... байт (... МБ)
+SHA-256:   ...
+```
+
+**Windows (SHA-256):**
+
+```powershell
+Get-FileHash build\app\outputs\flutter-apk\app-release.apk -Algorithm SHA256
+```
+
+**Linux / macOS:**
+
+```bash
+sha256sum build/app/outputs/flutter-apk/app-release.apk
+```
+
+> Сохранить хэш в заметках релиза или в отчёте с устройства — при retest можно сравнить, что установлен тот же артефакт.
+
 Push и GitHub Release — **только после** зелёного отчёта (Release Decision).  
 При **FAIL** → fix на ветке от `release/1.7.5-rc1` → retest → не переходить к v1.8.0, пока FAIL не закрыт.
 
@@ -394,6 +421,10 @@ git checkout -b feature/v1.8.0-year-review
 ```
 Устройство: Pixel 7
 Дата: YYYY-MM-DD
+
+APK (RC): d1ad434 / 1.7.5-rc1
+SHA-256: ...
+Размер APK: ... МБ
 
 Золотой сценарий: PASS / PASS WITH NOTES / FAIL
 OTA 1.7.0 → 1.7.5: PASS / PASS WITH NOTES / FAIL

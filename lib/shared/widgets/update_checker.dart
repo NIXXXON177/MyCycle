@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/constants/update_config.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/services/update_service.dart';
+import 'package:florea/core/constants/update_config.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/services/update_service.dart';
 
 /// Проверяет обновления при запуске и показывает диалог.
 class UpdateChecker extends ConsumerStatefulWidget {

@@ -1,7 +1,7 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/features/important_dates/data/models/important_date_model.dart';
-import 'package:mycycle/features/important_dates/domain/entities/important_date.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/features/important_dates/data/models/important_date_model.dart';
+import 'package:florea/features/important_dates/domain/entities/important_date.dart';
 
 class ImportantDateLocalDataSource {
   ImportantDateLocalDataSource(this._db);

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mycycle/core/security/pin_hasher.dart';
-import 'package:mycycle/core/services/settings_service.dart';
+import 'package:florea/core/security/pin_hasher.dart';
+import 'package:florea/core/services/settings_service.dart';
 
 /// Сериализация настроек SharedPreferences в settings.json.
 abstract final class BackupSettingsSnapshot {

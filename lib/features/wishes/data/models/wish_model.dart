@@ -1,5 +1,5 @@
-import 'package:mycycle/core/enums/wish_priority.dart';
-import 'package:mycycle/features/wishes/domain/entities/wish.dart';
+import 'package:florea/core/enums/wish_priority.dart';
+import 'package:florea/features/wishes/domain/entities/wish.dart';
 
 abstract final class WishModel {
   static Wish fromMap(Map<String, dynamic> map) {

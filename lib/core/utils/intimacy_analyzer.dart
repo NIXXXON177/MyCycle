@@ -1,9 +1,9 @@
-import 'package:mycycle/core/enums/cycle_phase.dart';
-import 'package:mycycle/core/enums/intimacy_type.dart';
-import 'package:mycycle/core/utils/cycle_calculator.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/core/enums/cycle_phase.dart';
+import 'package:florea/core/enums/intimacy_type.dart';
+import 'package:florea/core/utils/cycle_calculator.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
 
 /// Статистика близости за период.
 class IntimacyStats {

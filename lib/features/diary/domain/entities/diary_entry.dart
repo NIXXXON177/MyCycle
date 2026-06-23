@@ -1,4 +1,4 @@
-import 'package:mycycle/core/enums/mood_level.dart';
+import 'package:florea/core/enums/mood_level.dart';
 
 /// Запись дневника.
 class DiaryEntry {

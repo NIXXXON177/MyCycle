@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/services/widget/home_widget_service.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/services/widget/home_widget_service.dart';
 
 final homeWidgetServiceProvider = Provider<HomeWidgetService>((ref) {
   return HomeWidgetService(

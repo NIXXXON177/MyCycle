@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mycycle/app.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/theme/app_theme.dart';
-import 'package:mycycle/shared/widgets/app_logo.dart';
-import 'package:mycycle/shared/widgets/splash_screen.dart';
-import 'package:mycycle/core/services/widget/widget_background_handler.dart';
-import 'package:mycycle/core/services/widget/widget_provider.dart';
+import 'package:florea/app.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/theme/app_theme.dart';
+import 'package:florea/shared/widgets/app_logo.dart';
+import 'package:florea/shared/widgets/splash_screen.dart';
+import 'package:florea/core/services/widget/widget_background_handler.dart';
+import 'package:florea/core/services/widget/widget_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Экран загрузки и безопасная инициализация перед показом приложения.
@@ -109,7 +109,7 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
       );
     }
 
-    return const MyCycleApp();
+    return const FloreaApp();
   }
 }
 

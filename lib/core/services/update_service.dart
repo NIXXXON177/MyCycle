@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:mycycle/core/constants/update_config.dart';
+import 'package:florea/core/constants/update_config.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,7 +40,7 @@ class AppUpdateInfo {
 /// Проверка и установка обновлений через GitHub Releases.
 class UpdateService {
   static const _headers = {
-    'User-Agent': 'MyCycle-App',
+    'User-Agent': 'Florea-App',
     'Accept': 'application/vnd.github+json',
   };
 
@@ -114,7 +114,7 @@ class UpdateService {
       }
 
       apkUrl ??=
-          UpdateConfig.manifestUrl.replaceAll('manifest.json', 'MyCycle.apk');
+          UpdateConfig.manifestUrl.replaceAll('manifest.json', 'Florea.apk');
 
       return AppUpdateInfo(
         versionCode: versionCode,
@@ -157,7 +157,7 @@ class UpdateService {
     }
 
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/mycycle_update.apk');
+    final file = File('${dir.path}/florea_update.apk');
 
     final request = http.Request('GET', Uri.parse(update.apkUrl));
     request.headers.addAll(_headers);

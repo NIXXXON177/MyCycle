@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mycycle/core/services/settings_service.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/core/services/settings_service.dart';
+import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -14,7 +14,7 @@ class NotificationService {
   bool _initialized = false;
 
   static const _channelId = 'mycycle_reminders';
-  static const _channelName = 'Напоминания MyCycle';
+  static const _channelName = 'Напоминания Florea';
 
   Future<void> initialize() async {
     if (_initialized) return;

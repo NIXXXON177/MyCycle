@@ -10,6 +10,7 @@ build/
 
 # Android
 android/.gradle/
+android/.kotlin/
 android/local.properties
 android/app/debug/
 android/app/profile/
@@ -26,3 +27,6 @@ mycycle-release.jks
 # OS
 .DS_Store
 Thumbs.db
+
+# Локальные артефакты релиза (APK — в GitHub Releases / корень портфолио)
+_release/*.apk

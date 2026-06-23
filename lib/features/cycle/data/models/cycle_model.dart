@@ -1,5 +1,5 @@
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/cycle/domain/entities/cycle.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/cycle/domain/entities/cycle.dart';
 
 /// Маппинг Cycle <-> SQLite Map.
 abstract final class CycleModel {

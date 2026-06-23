@@ -1,8 +1,16 @@
 # Changelog
 
-Все заметные изменения MyCycle документируются в этом файле.
+Все заметные изменения Florea (ранее MyCycle) документируются в этом файле.
 
 Формат основан на [Keep a Changelog](https://keepachangelog.com/).
+
+## [1.8.1] — 2026-06-23
+
+### Ребрендинг и надёжность
+
+- Переименование приложения **MyCycle → Florea** (`com.florea.app`)
+- **Backup v2**, PIN hash, сброс биометрии после Restore
+- CI: релиз `Florea.apk` + `manifest.json` для авто-обновления
 
 ## [1.7.5] — 2026-06-19
 

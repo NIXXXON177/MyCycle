@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mycycle/shared/widgets/diary_image_preview.dart';
+import 'package:florea/shared/widgets/diary_image_preview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/core/router/app_router.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_image.dart';
-import 'package:mycycle/shared/widgets/app_card.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/core/router/app_router.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/diary/domain/entities/diary_entry.dart';
+import 'package:florea/features/diary/domain/entities/diary_image.dart';
+import 'package:florea/shared/widgets/app_card.dart';
 
 /// Галерея воспоминаний — записи и фото в хронологическом порядке.
 class MemoriesScreen extends ConsumerWidget {

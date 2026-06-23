@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mycycle/core/constants/app_colors.dart';
-import 'package:mycycle/core/providers/app_providers.dart';
-import 'package:mycycle/shared/widgets/app_logo.dart';
+import 'package:florea/core/constants/app_colors.dart';
+import 'package:florea/core/providers/app_providers.dart';
+import 'package:florea/shared/widgets/app_logo.dart';
 
 /// Экран ввода PIN-кода при запуске.
 class PinScreen extends ConsumerStatefulWidget {
@@ -65,7 +65,7 @@ class _PinScreenState extends ConsumerState<PinScreen>
               const AppLogo(size: 96),
               const SizedBox(height: 16),
               Text(
-                'MyCycle',
+                'Florea',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: AppColors.pinkDark,
                       fontWeight: FontWeight.bold,

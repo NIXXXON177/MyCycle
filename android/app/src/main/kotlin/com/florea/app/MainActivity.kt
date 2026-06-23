@@ -1,4 +1,4 @@
-package com.mycycle.mycycle
+package com.florea.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

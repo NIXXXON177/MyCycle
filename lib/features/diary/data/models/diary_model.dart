@@ -1,6 +1,6 @@
-import 'package:mycycle/core/enums/mood_level.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/diary/domain/entities/diary_entry.dart';
+import 'package:florea/core/enums/mood_level.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/diary/domain/entities/diary_entry.dart';
 
 abstract final class DiaryModel {
   static DiaryEntry fromMap(Map<String, dynamic> map) {

@@ -1,8 +1,8 @@
-import 'package:mycycle/core/constants/db_tables.dart';
-import 'package:mycycle/core/database/app_database.dart';
-import 'package:mycycle/core/utils/date_utils.dart';
-import 'package:mycycle/features/wellbeing/data/models/wellbeing_model.dart';
-import 'package:mycycle/features/wellbeing/domain/entities/wellbeing_entry.dart';
+import 'package:florea/core/constants/db_tables.dart';
+import 'package:florea/core/database/app_database.dart';
+import 'package:florea/core/utils/date_utils.dart';
+import 'package:florea/features/wellbeing/data/models/wellbeing_model.dart';
+import 'package:florea/features/wellbeing/domain/entities/wellbeing_entry.dart';
 import 'package:sqflite/sqflite.dart';
 
 class WellbeingLocalDataSource {
