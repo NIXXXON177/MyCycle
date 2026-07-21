@@ -2,6 +2,7 @@ import 'package:florea/core/utils/cycle_calculator.dart';
 import 'package:florea/features/cycle/data/datasources/cycle_local_datasource.dart';
 import 'package:florea/features/cycle/domain/entities/cycle.dart';
 import 'package:florea/features/cycle/domain/entities/cycle_prediction.dart';
+import 'package:florea/features/cycle/domain/period_day_editor.dart';
 import 'package:uuid/uuid.dart';
 
 class CycleRepository {
@@ -35,6 +36,29 @@ class CycleRepository {
   Future<void> updateCycle(Cycle cycle) => _dataSource.update(cycle);
 
   Future<void> deleteCycle(String id) => _dataSource.delete(id);
+
+  /// Включает или выключает день месячных. Возвращает новый статус дня.
+  Future<bool> togglePeriodDay(DateTime day) async {
+    final cycles = await getAllCycles();
+    final result = PeriodDayEditor.toggle(
+      cycles: cycles,
+      day: day,
+      defaultPeriodLength: _calculator.defaultPeriodLength,
+    );
+
+    for (final op in result.ops) {
+      switch (op) {
+        case PeriodDayCreate(:final startDate, :final endDate):
+          await addCycle(startDate: startDate, endDate: endDate);
+        case PeriodDayUpdate(:final cycle):
+          await updateCycle(cycle);
+        case PeriodDayDelete(:final id):
+          await deleteCycle(id);
+      }
+    }
+
+    return result.isPeriodDay;
+  }
 
   int averageCycleLength(List<Cycle> cycles) =>
       _calculator.averageCycleLength(cycles);

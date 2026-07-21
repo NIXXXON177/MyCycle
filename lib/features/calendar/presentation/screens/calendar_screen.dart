@@ -192,11 +192,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            if (repo.isPeriodDay(cycles, day))
-              const Chip(
-                avatar: Text('🔴'),
-                label: Text('Месячные'),
-              ),
             if (repo.isOvulationDay(prediction, day))
               const Chip(
                 avatar: Text('🟣'),
@@ -207,8 +202,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 avatar: Text('🟢'),
                 label: Text('Фертильное окно'),
               ),
+            const SizedBox(height: 12),
+            ..._buildPeriodActions(
+              sheetContext: sheetContext,
+              day: day,
+              cycles: cycles,
+              repo: repo,
+            ),
+            const SizedBox(height: 16),
             if (entry.isNotEmpty) ...[
-              const SizedBox(height: 8),
               AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,18 +242,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             ] else
               const Text('Самочувствие не отмечено'),
-            const SizedBox(height: 12),
-            Text(
-              'Месячные',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            ..._buildPeriodActions(
-              sheetContext: sheetContext,
-              day: day,
-              cycles: cycles,
-              repo: repo,
-            ),
             const SizedBox(height: 12),
             Text(
               'Близость',
@@ -312,6 +302,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }) {
     final date = AppDateUtils.dateOnly(day);
     final today = AppDateUtils.dateOnly(DateTime.now());
+    final isPeriod = repo.isPeriodDay(cycles, day);
 
     if (date.isAfter(today)) {
       return [
@@ -322,89 +313,41 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       ];
     }
 
-    if (repo.isPeriodDay(cycles, day)) {
-      return [
-        const Text('Этот день уже отмечен как месячные'),
-      ];
-    }
-
-    final ongoing = _ongoingCycleForEnd(cycles, date);
-    final widgets = <Widget>[];
-
-    if (ongoing != null) {
-      widgets.add(
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () => _endPeriodOnDay(sheetContext, date, ongoing),
-            icon: const Icon(Icons.stop_circle_outlined),
-            label: const Text('Окончание в этот день'),
+    return [
+      AppCard(
+        color: AppColors.period.withValues(alpha: isPeriod ? 0.22 : 0.08),
+        child: SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          secondary: Icon(
+            Icons.water_drop,
+            color: isPeriod ? AppColors.period : AppColors.pinkDark,
           ),
-        ),
-      );
-    } else {
-      widgets.add(
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () => _startPeriodOnDay(sheetContext, date),
-            icon: const Icon(Icons.water_drop_outlined),
-            label: const Text('Начало в этот день'),
-          ),
-        ),
-      );
-    }
-
-    return widgets;
-  }
-
-  /// Незавершённый цикл, который можно закрыть в [day].
-  Cycle? _ongoingCycleForEnd(List<Cycle> cycles, DateTime day) {
-    final target = AppDateUtils.dateOnly(day);
-    Cycle? best;
-    for (final c in cycles) {
-      final start = AppDateUtils.dateOnly(c.startDate);
-      if (start.isAfter(target)) continue;
-      if (c.endDate != null) continue;
-      if (best == null || start.isAfter(AppDateUtils.dateOnly(best.startDate))) {
-        best = c;
-      }
-    }
-    return best;
-  }
-
-  Future<void> _startPeriodOnDay(
-    BuildContext sheetContext,
-    DateTime day,
-  ) async {
-    await ref.read(cycleRepositoryProvider).addCycle(startDate: day);
-    await _afterCycleChange();
-    if (!mounted || !sheetContext.mounted) return;
-    Navigator.pop(sheetContext);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Начало месячных: ${AppDateUtils.formatDate(day)}',
+          title: const Text('Месячные'),
+          subtitle: Text(isPeriod ? 'Отмечено' : 'Не отмечено'),
+          value: isPeriod,
+          activeThumbColor: AppColors.period,
+          activeTrackColor: AppColors.period.withValues(alpha: 0.45),
+          onChanged: (_) => _togglePeriodDay(sheetContext, date),
         ),
       ),
-    );
+    ];
   }
 
-  Future<void> _endPeriodOnDay(
+  Future<void> _togglePeriodDay(
     BuildContext sheetContext,
     DateTime day,
-    Cycle cycle,
   ) async {
-    await ref
-        .read(cycleRepositoryProvider)
-        .updateCycle(cycle.copyWith(endDate: day));
+    final marked =
+        await ref.read(cycleRepositoryProvider).togglePeriodDay(day);
     await _afterCycleChange();
     if (!mounted || !sheetContext.mounted) return;
     Navigator.pop(sheetContext);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Окончание месячных: ${AppDateUtils.formatDate(day)}',
+          marked
+              ? 'Месячные: ${AppDateUtils.formatDate(day)}'
+              : 'Снята отметка: ${AppDateUtils.formatDate(day)}',
         ),
       ),
     );
